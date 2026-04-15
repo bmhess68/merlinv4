@@ -1,0 +1,74 @@
+/* Map marker styling */
+.map-marker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s ease;
+}
+
+.map-marker:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Marker label styling */
+.marker-label {
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: center;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+  pointer-events: none; /* Prevent label from capturing clicks */
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 10;
+}
+
+/* Make labels more visible when zoomed out */
+@media (max-width: 768px) {
+  .marker-label {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+  
+  .map-marker {
+    width: 28px;
+    height: 28px;
+    border-width: 3px;
+  }
+}
+
+/* Helper function to darken colors */
+:root {
+  --marker-shadow: rgba(0, 0, 0, 0.5);
+}
+
+/* Custom styles for different marker types */
+.marker-incident {
+  background-color: #FF4136; /* Red */
+  border-color: #B22222;
+}
+
+.marker-poi {
+  background-color: #0074D9; /* Blue */
+  border-color: #00408A;
+}
+
+.marker-checkpoint {
+  background-color: #2ECC40; /* Green */
+  border-color: #1B7926;
+}
+
+.marker-caution {
+  background-color: #FFDC00; /* Yellow */
+  border-color: #B8A000;
+  color: #333;
+} 

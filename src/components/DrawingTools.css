@@ -1,0 +1,97 @@
+.custom-draw-toolbar {
+    position: fixed;
+    left: 10px;
+    top: 80px;
+    z-index: 1000;
+    background-color: rgba(40, 44, 52, 0.95);
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.custom-draw-button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    transition: all 0.2s ease;
+}
+
+.custom-draw-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.custom-draw-button img {
+    width: 20px;
+    height: 20px;
+    filter: invert(1); /* Makes the icons white */
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+    .custom-draw-toolbar {
+        top: 60px;
+        padding: 6px;
+        gap: 6px;
+    }
+
+    .custom-draw-button {
+        width: 28px;
+        height: 28px;
+        padding: 4px;
+    }
+
+    .custom-draw-button img {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Custom tooltip styling */
+.custom-tooltip {
+    background-color: rgba(40, 44, 52, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: white;
+    font-size: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Leaflet draw styles override */
+.leaflet-draw-toolbar a {
+    background-color: rgba(40, 44, 52, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+}
+
+.leaflet-draw-toolbar a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.leaflet-draw-actions {
+    background-color: rgba(40, 44, 52, 0.95);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.leaflet-draw-actions a {
+    color: white;
+    background-color: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.leaflet-draw-actions a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

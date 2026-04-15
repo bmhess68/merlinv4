@@ -1,0 +1,274 @@
+.modal-dialog.incident-form-modal {
+    max-width: 300px;
+    margin: 1.75rem auto;
+}
+
+.incident-form-modal .modal-content {
+    background-color: rgba(40, 44, 52, 0.95);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    width: 100%;
+}
+
+.incident-form-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+}
+
+.incident-form-modal .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.incident-form-modal .modal-body {
+    padding: 10px 12px;
+}
+
+.incident-form-modal .compact-form .form-group {
+    margin-bottom: 6px;
+}
+
+.incident-form-modal .form-label {
+    font-size: 12px;
+    color: white;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.incident-form-modal .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+}
+
+.incident-form-modal .form-control.form-control-sm {
+    padding: 2px 5px;
+    height: 28px;
+    font-size: 0.85rem;
+}
+
+.incident-form-modal .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: none;
+}
+
+.incident-form-modal .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.incident-form-modal .form-control:disabled {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.incident-form-modal .form-select {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.9rem;
+}
+
+.incident-form-modal .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: none;
+}
+
+.incident-form-modal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+}
+
+.incident-form-modal .btn-primary {
+    background-color: #34C759;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.incident-form-modal .btn-primary:hover {
+    background-color: #2FB350;
+}
+
+.incident-form-modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.incident-form-modal .btn-close:hover {
+    opacity: 1;
+}
+
+/* Style for select dropdowns */
+.incident-form-modal select.form-control,
+.incident-form-modal .form-select {
+    background-color: rgba(40, 44, 52, 0.95);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    -webkit-appearance: none;  /* Remove default arrow in WebKit browsers */
+    -moz-appearance: none;     /* Remove default arrow in Firefox */
+    appearance: none;          /* Remove default arrow */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+
+/* Remove default arrow in IE */
+.incident-form-modal select.form-control::-ms-expand,
+.incident-form-modal .form-select::-ms-expand {
+    display: none;
+}
+
+/* Style for dropdown options */
+.incident-form-modal select.form-control option,
+.incident-form-modal .form-select option {
+    background-color: rgba(40, 44, 52, 0.95);
+    color: white;
+}
+
+/* Style for select when focused */
+.incident-form-modal select.form-control:focus,
+.incident-form-modal .form-select:focus {
+    background-color: rgba(40, 44, 52, 0.95);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+    .modal-dialog.incident-form-modal {
+        max-width: 90%;
+        margin: 1rem auto;
+    }
+
+    .incident-form-modal .modal-content {
+        width: 100%;
+    }
+
+    .incident-form-modal .modal-title {
+        font-size: 14px;
+    }
+
+    .incident-form-modal .modal-header {
+        padding: 6px 10px;
+    }
+
+    .incident-form-modal .modal-body {
+        padding: 8px 10px;
+    }
+
+    .incident-form-modal .form-label {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+
+    .incident-form-modal .form-control {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+
+    .incident-form-modal .modal-footer {
+        padding: 6px 10px;
+    }
+
+    .incident-form-modal .btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+
+    .incident-form-modal select.form-control,
+    .incident-form-modal .form-select {
+        font-size: 12px;
+        padding: 3px 6px;
+    }
+}
+
+/* Reduce spacing between form groups */
+.incident-form-modal .form-group {
+    margin-bottom: 6px;
+}
+
+/* Make textarea smaller */
+.incident-form-modal textarea.form-control {
+    min-height: 40px;
+    resize: none;
+}
+
+/* Style for address field when successfully loaded */
+.incident-form-modal textarea.form-control.address-success {
+    border-color: rgba(52, 199, 89, 0.5);
+    background-color: rgba(52, 199, 89, 0.1);
+}
+
+/* Style for the address coordinates display */
+.incident-form-modal .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Style for the row/col layout */
+.incident-form-modal .row {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.incident-form-modal .col-6 {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* Highlight the location on the map */
+.incident-form-modal .map-indicator {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* Location point animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.incident-form-modal .location-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+    justify-content: center;
+}

@@ -1,0 +1,1855 @@
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import {
+    MapContainer, TileLayer, useMap, useMapEvents, Marker, Popup, Tooltip
+} from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-rotatedmarker';
+import '../App.css';
+import EditMarkersModal from './EditMarkersModal';
+import VehicleLayer from './VehicleLayer';
+import logo from '../images/icons/logo.png'; // Import the RTC logo
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import { Icon, divIcon } from 'leaflet';
+import io from 'socket.io-client';
+import { debounce } from 'lodash';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Import necessary icons from your existing project
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Fix default icons (same as in your MapPage.js)
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow
+});
+
+// Define MAP_URLS at the top level so it's accessible throughout the file
+const MAP_URLS = {
+    openStreetMap: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    googleMaps: `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`,
+    googleSatellite: `https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`,
+    googleHybrid: `https://mt1.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}&key=${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`,
+    // Try these alternative dark mode maps
+    cartoDBDark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    stamenToner: "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+    // Keep ESRI as an option but with corrected URL format
+    esriDarkGray: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+};
+
+// Create a red pin marker using emoji (simpler approach)
+const redPinMarkerIcon = divIcon({
+    html: `<div style="font-size: 36px; text-align: center; line-height: 1;">📍</div>`,
+    className: 'emoji-pin-marker',
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],  // Bottom center of the icon
+    popupAnchor: [0, -36]  // Top center of the icon
+});
+
+// Create a component to handle marker styles
+function MarkerStyles() {
+    useEffect(() => {
+        // Check if the style element already exists
+        let styleElement = document.getElementById('marker-styles');
+        
+        if (!styleElement) {
+            // Create it if it doesn't exist
+            styleElement = document.createElement('style');
+            styleElement.id = 'marker-styles';
+            document.head.appendChild(styleElement);
+        }
+        
+        // Update the content
+        styleElement.textContent = `
+            .emoji-pin-marker {
+                filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            }
+            
+            .emoji-pin-marker div {
+                transform: translateY(-4px);
+            }
+            
+            /* Make sure the tooltip is visible */
+            .leaflet-tooltip {
+                background-color: rgba(25, 25, 25, 0.8);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 5px 10px;
+                font-weight: bold;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            }
+            
+            .leaflet-tooltip-top:before {
+                border-top-color: rgba(25, 25, 25, 0.8);
+            }
+        `;
+        
+        return () => {
+            // Only remove if this is the last instance
+            if (document.getElementById('marker-styles')) {
+                document.head.removeChild(styleElement);
+            }
+        };
+    }, []);
+    
+    return null;
+}
+
+// Component to handle map constraints (zoom/pan limits)
+function MapConstraints({ followedVehicle, disablePan }) {
+    const map = useMap();
+    
+    // Disable panning based on prop
+    useEffect(() => {
+        if (disablePan || followedVehicle) {
+            // Disable map interactions when following or when disablePan is true
+            map.dragging.disable();
+            map.touchZoom.disable();
+            map.doubleClickZoom.disable();
+            map.scrollWheelZoom.disable();
+            map.boxZoom.disable();
+            map.keyboard.disable();
+            
+            return () => {
+                // Re-enable map interactions when not following and disablePan is false
+                map.dragging.enable();
+                map.touchZoom.enable();
+                map.doubleClickZoom.enable();
+                map.scrollWheelZoom.enable();
+                map.boxZoom.enable();
+                map.keyboard.enable();
+            };
+        }
+    }, [followedVehicle, map, disablePan]);
+    
+    useMapEvents({
+        zoom: () => {
+            // Enforce zoom constraints (16-18 as requested)
+            const currentZoom = map.getZoom();
+            console.log('Current zoom level:', currentZoom);
+            if (currentZoom < 15) {
+                map.setZoom(15);
+            } else if (currentZoom > 18) {
+                map.setZoom(18);
+            }
+        },
+        dragstart: (e) => {
+            // Prevent panning when following a vehicle or when disablePan is true
+            if ((followedVehicle || disablePan) && e && e.originalEvent) {
+                e.originalEvent.preventDefault();
+            } else if (followedVehicle || disablePan) {
+                // Alternative approach if originalEvent is not available
+                map.dragging.disable();
+                
+                // Re-enable dragging after a short delay to prevent getting stuck
+                setTimeout(() => {
+                    if (map && followedVehicle) {
+                        map.panTo([followedVehicle.latitude, followedVehicle.longitude]);
+                    }
+                }, 100);
+            }
+        }
+    });
+    
+    return null;
+}
+
+// Component to get user's current location and initialize the map
+function LocationFinder() {
+    const map = useMap();
+    
+    useEffect(() => {
+        // Get current location
+        map.locate({ setView: true, maxZoom: 16 });
+        
+        // Add event handler for when location is found
+        function onLocationFound(e) {
+            console.log("Location found:", e.latlng);
+            map.setView(e.latlng, 17);
+            
+            // Force map invalidation after a slight delay
+            setTimeout(() => {
+                console.log("Invalidating map size");
+                map.invalidateSize(true);
+            }, 200);
+        }
+        
+        map.on('locationfound', onLocationFound);
+        
+        return () => {
+            map.off('locationfound', onLocationFound);
+        };
+    }, [map]);
+    
+    return null;
+}
+
+// Updated StatusBar component with intersection and highway exit information
+const StatusBar = ({ followedVehicle }) => {
+    // Format heading as compass direction
+    const getCompassDirection = (degrees) => {
+        if (degrees === undefined || degrees === null) return 'N/A';
+        
+        const directions = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+        const index = Math.round((degrees % 360) / 22.5) % 16;
+        return directions[index];
+    };
+
+    // Glass effect style base
+    const glassEffect = {
+        backgroundColor: 'rgba(25, 25, 25, 0.8)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderRadius: '20px',
+        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.15)'
+    };
+    
+    // Move status bar higher to avoid overlap with bottom buttons and increase size by 1.5X
+    const statusBarStyle = {
+        position: 'fixed',
+        bottom: '80px', // Higher position to accommodate larger size
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '85%',
+        padding: '15px 21px', // 1.5X from original 10px 14px
+        color: 'white',
+        zIndex: 999,
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: '600px',
+        ...glassEffect
+    };
+    
+    const emptyStatusStyle = {
+        ...statusBarStyle,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '15px 21px', // 1.5X from original
+        fontSize: '24px', // 1.5X from original 16px
+        fontWeight: '500',
+        color: 'rgba(255, 255, 255, 0.9)',
+        flexDirection: 'row'
+    };
+    
+    // Main content row style
+    const mainRowStyle = {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%'
+    };
+    
+    // Left side container for address and unit info
+    const leftContainerStyle = {
+        flex: '1',
+        overflow: 'hidden',
+        marginRight: '15px' // 1.5X from original 10px
+    };
+    
+    // Larger street display (1.5X)
+    const streetStyle = {
+        fontSize: '30px', // 1.5X from original 20px
+        fontWeight: '700',
+        color: 'white',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        marginBottom: '3px' // 1.5X from original 2px
+    };
+    
+    // Unit info style (1.5X)
+    const unitStyle = {
+        fontSize: '18px', // 1.5X from original 12px
+        fontWeight: '500',
+        color: 'rgba(255, 255, 255, 0.8)',
+        display: 'flex',
+        alignItems: 'center'
+    };
+    
+    // Large heading display that spans both lines
+    const largeHeadingStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        borderRadius: '18px', // 1.5X from original 12px
+        padding: '12px', // 1.5X from original 8px
+        minWidth: '75px', // 1.5X from original 50px
+        height: '100%',
+        alignSelf: 'stretch'
+    };
+    
+    // Large compass direction text (1.5X)
+    const largeCompassStyle = {
+        fontSize: '36px', // 1.5X from original 24px
+        fontWeight: '700',
+        color: 'white',
+        lineHeight: '1'
+    };
+    
+    // Style for the intersection/exit info row (1.5X)
+    const infoRowStyle = {
+        fontSize: '21px', // 1.5X from original 14px
+        fontWeight: '500',
+        color: 'rgba(255, 255, 255, 0.9)',
+        marginTop: '9px', // 1.5X from original 6px
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        paddingTop: '6px', // 1.5X from original 4px
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+    };
+    
+    // Extract address from Nominatim or create cross streets format
+    const getFormattedAddress = (vehicle) => {
+        if (!vehicle) return null;
+        
+        // If we already have an address from reverse geocoding
+        if (vehicle.address) {
+            // Parse the address information to show house number and street name
+            const addressParts = vehicle.address.split(',');
+            
+            // Extract useful information from OpenStreetMap response
+            if (vehicle.addressDetails && vehicle.addressDetails.house_number && vehicle.addressDetails.road) {
+                return `${vehicle.addressDetails.house_number} ${vehicle.addressDetails.road}`;
+            }
+            
+            // If we have a structured house_number and road, show them combined
+            const firstPart = addressParts[0].trim();
+            // Check if the first part already has both number and street
+            if (/^\d+\s+\w+/.test(firstPart)) {
+                return firstPart;
+            } else if (addressParts.length > 1) {
+                // Try to combine first two parts if first part seems to be just a number
+                if (/^\d+$/.test(firstPart.trim()) && addressParts[1].trim()) {
+                    return `${firstPart} ${addressParts[1].trim()}`;
+                }
+            }
+            
+            return firstPart;
+        }
+        
+        // Fallback if no address is available
+        return `${vehicle.latitude.toFixed(5)}, ${vehicle.longitude.toFixed(5)}`;
+    };
+    
+    // If no vehicle is selected, show the placeholder
+    if (!followedVehicle) {
+        return (
+            <div style={emptyStatusStyle}>
+                <div>Select a vehicle to track</div>
+            </div>
+        );
+    }
+    
+    // For string value (just display name)
+    if (typeof followedVehicle === 'string') {
+        return (
+            <div style={statusBarStyle}>
+                <div style={mainRowStyle}>
+                    <div style={{ 
+                        fontSize: '27px',  // 1.5X from original 18px
+                        fontWeight: '600',
+                        flex: '1'
+                    }}>
+                        {followedVehicle}
+                    </div>
+                    <div style={{ 
+                        fontSize: '18px',  // 1.5X from original 12px
+                        opacity: 0.8,
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        borderRadius: '12px',  // 1.5X from original 8px
+                        padding: '4.5px 9px'  // 1.5X from original 3px 6px
+                    }}>
+                        Following
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
+    // Formatted address - highest priority
+    const formattedAddress = getFormattedAddress(followedVehicle);
+    const compassDir = getCompassDirection(followedVehicle.heading);
+    
+    // Determine what additional info to show (exit or intersection) - prefer exit if on highway
+    const showExitInfo = followedVehicle.nearestExit && followedVehicle.nearestExit.length > 0;
+    const showIntersectionInfo = followedVehicle.nearestIntersection && followedVehicle.nearestIntersection.length > 0;
+    const showNextIntersection = followedVehicle.nextIntersection && followedVehicle.nextIntersection.length > 0;
+    
+    // For object with full vehicle data - with large heading on right
+    return (
+        <div style={statusBarStyle}>
+            <div style={mainRowStyle}>
+                {/* Left side: Address and unit info */}
+                <div style={leftContainerStyle}>
+                    <div style={streetStyle}>
+                        {formattedAddress}
+                    </div>
+                    <div style={unitStyle}>
+                        <span>{followedVehicle.displayName}</span>
+                        <span style={{ 
+                            marginLeft: '7.5px',  // 1.5X from original 5px
+                            fontSize: '16.5px',   // 1.5X from original 11px
+                            opacity: 0.7,
+                            fontStyle: 'italic'
+                        }}>
+                            (Following)
+                        </span>
+                    </div>
+                </div>
+                
+                {/* Right side: Large heading indicator */}
+                <div style={largeHeadingStyle}>
+                    <div style={largeCompassStyle}>
+                        {compassDir}
+                    </div>
+                </div>
+            </div>
+            
+            {/* Intersection or exit info row - with preference for nextIntersection if available */}
+            {(showNextIntersection || showExitInfo || showIntersectionInfo) && (
+                <div style={infoRowStyle}>
+                    {showNextIntersection ? 
+                        followedVehicle.nextIntersection : 
+                        showExitInfo ? 
+                            followedVehicle.nearestExit : 
+                            showIntersectionInfo ? 
+                                followedVehicle.nearestIntersection : 
+                                ''}
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Zoom Controls Component - Update position to be higher to avoid overlap
+const ZoomControls = () => {
+    const map = useMap();
+    
+    const controlsContainerStyle = {
+        position: 'fixed',
+        right: '15px',           // Reduced from 20px
+        bottom: '70px',          // Increased from 80px to move higher above buttons
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',              // Reduced from 12px
+        zIndex: 1000
+    };
+    
+    const buttonStyle = {
+        width: '36px',           // Reduced from 45px
+        height: '36px',          // Reduced from 45px
+        borderRadius: '50%',
+        backgroundColor: 'rgba(25, 25, 25, 0.7)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        color: 'white',
+        fontSize: '20px',        // Reduced from 24px
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+        transition: 'transform 0.2s, background-color 0.2s'
+    };
+    
+    const handleZoomIn = () => {
+        map.setZoom(Math.min(map.getZoom() + 1, 18));
+    };
+    
+    const handleZoomOut = () => {
+        map.setZoom(Math.max(map.getZoom() - 1, 16));
+    };
+    
+    return (
+        <div style={controlsContainerStyle}>
+            <button 
+                style={buttonStyle} 
+                onClick={handleZoomIn}
+                title="Zoom In"
+                className="mobile-button"
+            >
+                +
+            </button>
+            <button 
+                style={buttonStyle} 
+                onClick={handleZoomOut}
+                title="Zoom Out"
+                className="mobile-button"
+            >
+                −
+            </button>
+        </div>
+    );
+};
+
+// Header component with logo and user info
+const Header = ({ user, darkMode, toggleDarkMode }) => {
+    const [userData, setUserData] = useState(null);
+    const [avatarError, setAvatarError] = useState(false);
+    
+    useEffect(() => {
+        // Use the raw user data from console logs
+        try {
+            // If we have user data from props, use it
+            if (user && user.userName) {
+                setUserData(user);
+                return;
+            }
+            
+            // Extract from URL query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            
+            if (userParam) {
+                // Try to parse the user parameter
+                const parsedUser = JSON.parse(decodeURIComponent(userParam));
+                console.log("Successfully parsed user data:", parsedUser);
+                setUserData(parsedUser);
+            } else {
+                // Fallback to using hard-coded data from the logs
+                console.log("Using fallback user data");
+                setUserData({
+                    userName: "Lt Brian Hess (RTC)",
+                    userAvatar: "https://avatar-slack-edge.com/2023-10-23/6068087494647_b9a320_512.png",
+                    permissions: {
+                        admin: true,
+                        fireGPS: true,
+                        policeGPS: true,
+                        starchase: true,
+                        makeIncidents: true
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Error parsing user data:", e);
+            // Fallback if parsing fails
+            setUserData({
+                userName: "Lt Brian Hess",
+                userAvatar: "https://avatar-slack-edge.com/2023-10-23/6068087494647_b9a320_512.png"
+            });
+        }
+    }, [user]);
+    
+    const headerStyle = {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: '10px 15px',
+        zIndex: 1000,
+        pointerEvents: 'none'
+    };
+    
+    const logoStyle = {
+        height: '60px',
+        pointerEvents: 'auto'
+    };
+    
+    const userSectionStyle = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        gap: '8px',
+        pointerEvents: 'auto'
+    };
+    
+    const userContainerStyle = {
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: 'rgba(25, 25, 25, 0.7)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        borderRadius: '20px',
+        padding: '5px 12px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+        pointerEvents: 'auto',
+        cursor: 'pointer'
+    };
+    
+    const avatarStyle = {
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        marginRight: '8px',
+        border: '1px solid rgba(255, 255, 255, 0.3)'
+    };
+    
+    const usernameStyle = {
+        color: 'white',
+        fontSize: '14px',
+        fontWeight: '500'
+    };
+    
+    const darkModeButtonStyle = {
+        backgroundColor: 'rgba(25, 25, 25, 0.7)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        color: 'white',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        borderRadius: '20px',
+        padding: '5px 12px',
+        fontSize: '14px',
+        fontWeight: '500',
+        cursor: 'pointer',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    };
+    
+    const handleLogout = () => {
+        try {
+            // Clear local storage first
+            localStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            
+            // Call server logout endpoint with proper headers
+            fetch('/logout', {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).catch(err => console.error("Logout request error:", err));
+        } catch (error) {
+            console.error('Logout request failed:', error);
+        } finally {
+            // Redirect to login page
+            window.location.href = '/login';
+        }
+    };
+    
+    // Only render if we have user data
+    if (!userData) return null;
+    
+    return (
+        <div style={headerStyle}>
+            <img src={logo} alt="RTC Logo" style={logoStyle} />
+            
+            <div style={userSectionStyle}>
+                <div style={userContainerStyle} onClick={handleLogout} title="Click to logout">
+                    {userData.userAvatar && !avatarError ? (
+                        <img 
+                            src={userData.userAvatar} 
+                            alt="Avatar" 
+                            style={avatarStyle} 
+                            onError={(e) => {
+                                console.log("Avatar image failed to load");
+                                setAvatarError(true); // Set error state to prevent further attempts
+                            }}
+                        />
+                    ) : (
+                        <div style={{
+                            ...avatarStyle,
+                            backgroundColor: '#3498db',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '16px'
+                        }}>
+                            {userData.userName ? userData.userName.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                    )}
+                    <div style={usernameStyle}>{userData.userName}</div>
+                </div>
+                
+                <button 
+                    style={darkModeButtonStyle}
+                    onClick={toggleDarkMode}
+                >
+                    <span style={{ marginRight: '8px', fontSize: '16px' }}>
+                        {darkMode ? '☀️' : '🌙'}
+                    </span>
+                    {darkMode ? 'Light' : 'Dark'} Mode
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// Bottom toolbar with distinct buttons
+const BottomControls = ({ handleCreateMarker, toggleMobileMode }) => {
+    const containerStyle = {
+        position: 'fixed',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        display: 'flex',
+        gap: '15px',
+        zIndex: 1000
+    };
+    
+    const buttonStyle = {
+        backgroundColor: 'rgba(25, 25, 25, 0.7)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        color: 'white',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        borderRadius: '24px',
+        padding: '10px 18px',
+        fontSize: '14px',
+        fontWeight: '500',
+        cursor: 'pointer',
+        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    };
+    
+    const iconStyle = {
+        marginRight: '8px',
+        fontSize: '16px'
+    };
+    
+    return (
+        <div style={containerStyle}>
+            <button style={buttonStyle} onClick={handleCreateMarker}>
+                <span style={iconStyle}>📍</span>
+                Mark Location
+            </button>
+            
+            <button style={buttonStyle} onClick={toggleMobileMode}>
+                <span style={iconStyle}>🖥️</span>
+                Desktop Mode
+            </button>
+        </div>
+    );
+};
+
+// Update or add a TileLayer switcher component:
+function TileLayerSwitcher() {
+    const map = useMap();
+    const [currentZoom, setCurrentZoom] = useState(map.getZoom());
+    const googleApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+    
+    // Create a debounced function
+    const debouncedSetZoom = useRef(
+        debounce((newZoom) => {
+            setCurrentZoom(newZoom);
+        }, 100)
+    ).current;
+
+    // Use the debounced function
+    useMapEvents({
+        zoomend: () => {
+            const zoom = map.getZoom();
+            console.log('Current zoom level:', zoom);
+            debouncedSetZoom(zoom);
+        }
+    });
+
+    // Clean up the debounced function
+    useEffect(() => {
+        return () => {
+            debouncedSetZoom.cancel();
+        };
+    }, [debouncedSetZoom]);
+    
+    // Determine which tile layer to use based on zoom level
+    const tileUrl = useMemo(() => {
+        // Use Google Hybrid for zoom levels 19-21
+        if (currentZoom >= 19) {
+            return `https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=${googleApiKey}`;
+        }
+        // Use OpenStreetMap for zoom levels below 19
+        return MAP_URLS.openStreetMap;
+    }, [currentZoom, googleApiKey]);
+    
+    return (
+        <TileLayer 
+            key={`tile-layer-${currentZoom >= 19 ? 'google-hybrid' : 'osm'}`}
+            url={tileUrl} 
+            attribution={currentZoom >= 19 ? '© Google' : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+        />
+    );
+}
+
+// Updated MarkerNameModal component
+const MarkerNameModal = ({ show, onClose, onSave }) => {
+    const [name, setName] = useState('');
+    
+    // Reset the name field when modal opens
+    useEffect(() => {
+        if (show) {
+            setName('');
+        }
+    }, [show]);
+    
+    const handleSave = () => {
+        if (name.trim()) {
+            onSave(name);
+            setName('');
+        }
+    };
+    
+    return (
+        <Modal 
+            show={show} 
+            onHide={onClose}
+            centered
+            backdrop="static"
+            style={{
+                zIndex: 2000 // Ensure it's above other map elements
+            }}
+            size="sm" // Make the modal smaller
+        >
+            <Modal.Header closeButton>
+                <Modal.Title>Name Your Marker</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Marker Name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter a name for this marker"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            autoFocus
+                        />
+                    </Form.Group>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                padding: '10px 15px',
+                borderTop: '1px solid #dee2e6'
+            }}>
+                <Button 
+                    variant="secondary" 
+                    onClick={onClose}
+                    size="sm"
+                >
+                    Cancel
+                </Button>
+                <Button 
+                    variant="primary" 
+                    onClick={handleSave}
+                    disabled={!name.trim()}
+                    size="sm"
+                >
+                    Save Marker
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
+
+// Create a component to handle map clicks for marking
+function MapMarker({ isMarkingMode, setIsMarkingMode, setShowNameModal, setTempMarkerPosition }) {
+    const map = useMapEvents({
+        click: (e) => {
+            if (isMarkingMode) {
+                console.log('Map clicked at:', e.latlng);
+                setTempMarkerPosition([e.latlng.lat, e.latlng.lng]);
+                setShowNameModal(true);
+                setIsMarkingMode(false); // Exit marking mode after placing marker
+            }
+        }
+    });
+    
+    return null;
+}
+
+// Create a component to display all markers
+function MarkersLayer({ markers, onMarkerDelete, user }) {
+    return (
+        <>
+            {markers.map((marker) => (
+                <Marker
+                    key={marker.id}
+                    position={[marker.latitude, marker.longitude]}
+                    icon={redPinMarkerIcon}  // Using the new pin marker icon
+                    eventHandlers={{
+                        dblclick: () => {
+                            // Only allow deletion if the user created the marker or is an admin
+                            if (marker.createdBy === user.userName || (user.permissions && user.permissions.admin)) {
+                                onMarkerDelete(marker.id);
+                            }
+                        }
+                    }}
+                >
+                    <Popup>
+                        <div>
+                            <strong>{marker.name}</strong>
+                            <p>Created by: {marker.createdBy}</p>
+                            <p>
+                                {marker.createdBy === user.userName || (user.permissions && user.permissions.admin) ? 
+                                    "Double-click marker to delete" : ""}
+                            </p>
+                        </div>
+                    </Popup>
+                    {/* Add permanent tooltip */}
+                    <Tooltip permanent direction="top" offset={[0, -30]}>
+                        <span style={{ fontWeight: 'bold' }}>{marker.name}</span>
+                    </Tooltip>
+                </Marker>
+            ))}
+        </>
+    );
+}
+
+// Create a singleton socket instance at the module level
+let globalSocket = null;
+
+const MobileMap = ({ user, toggleMobileMode }) => {
+    const [showEditMarkersModal, setShowEditMarkersModal] = useState(false);
+    const [vehicles, setVehicles] = useState([]);
+    const [followedVehicle, setFollowedVehicle] = useState(null);
+    const [currentZoom, setCurrentZoom] = useState(18);
+    const [selectedMapType, setSelectedMapType] = useState('googleMaps');
+    const mapRef = useRef(null);
+    const [darkMode, setDarkMode] = useState(false);
+    const [tileLoadErrors, setTileLoadErrors] = useState(0);
+    const [currentMapProvider, setCurrentMapProvider] = useState('openStreetMap');
+    const [disablePan, setDisablePan] = useState(true); // Start with panning disabled
+    
+    // New state variables for marker functionality
+    const [isMarkingMode, setIsMarkingMode] = useState(false);
+    const [showNameModal, setShowNameModal] = useState(false);
+    const [tempMarkerPosition, setTempMarkerPosition] = useState(null);
+    const [markers, setMarkers] = useState([]);
+    
+    const intervalRef = useRef(null);
+
+    const adjustButtonsForOrientationRef = useRef(() => {
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const buttons = document.querySelectorAll('.mobile-button');
+        
+        buttons.forEach(button => {
+            if (isPortrait) {
+                button.style.padding = '6px 12px';
+                button.style.fontSize = '12px';
+                button.style.height = '32px';
+            } else {
+                button.style.padding = '8px 16px';
+                button.style.fontSize = '14px';
+                button.style.height = '40px';
+            }
+        });
+    });
+
+    useEffect(() => {
+        const adjustButtonsForOrientation = adjustButtonsForOrientationRef.current;
+        
+        // Add orientation change listener
+        window.addEventListener('resize', adjustButtonsForOrientation);
+        
+        // Initial adjustment
+        adjustButtonsForOrientation();
+        
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', adjustButtonsForOrientation);
+        };
+    }, []);
+
+    // Function to handle when a vehicle is selected for following
+    const handleVehicleFollow = async (vehicle) => {
+        console.log("Vehicle selected for following:", vehicle);
+        
+        // Enable panning once a vehicle is selected
+        setDisablePan(false);
+        
+        // If we just have the displayName (string)
+        if (typeof vehicle === 'string') {
+            // Fetch the complete vehicle data
+            const vehicleData = await fetchVehicleLocation(vehicle);
+            if (vehicleData) {
+                setFollowedVehicle(vehicleData);
+            } else {
+                // Fallback to just the display name if we can't get the data
+                setFollowedVehicle({ displayName: vehicle });
+            }
+        } 
+        // If we have a vehicle object but missing lat/long
+        else if (typeof vehicle === 'object' && 
+                 (!vehicle.latitude || !vehicle.longitude)) {
+            const vehicleData = await fetchVehicleLocation(vehicle.displayName);
+            if (vehicleData) {
+                setFollowedVehicle(vehicleData);
+            } else {
+                setFollowedVehicle(vehicle);
+            }
+        }
+        // If we have a complete vehicle object
+        else {
+            setFollowedVehicle(vehicle);
+        }
+    };
+    
+    // Function to handle marker creation
+    const handleCreateMarker = () => {
+        setIsMarkingMode(true);
+        // Enable panning temporarily while in marking mode
+        setDisablePan(false);
+    };
+    
+    // Function to update current zoom
+    const handleZoomChange = (newZoom) => {
+        console.log('Zoom changed to:', newZoom);
+        setCurrentZoom(newZoom);
+    };
+
+    // Add this function to MobileMap component
+    const fetchVehicleLocation = useCallback(async (displayName) => {
+        if (!displayName) return null;
+        
+        try {
+            // Fetch the latest locations from the endpoint
+            const response = await fetch('/api/update-locations', {
+                credentials: 'include',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Fetched location data:', data);
+            
+            // Find the vehicle with the matching displayName
+            const vehicle = data.find(v => v.displayName === displayName);
+            
+            if (vehicle) {
+                console.log('Found vehicle data:', vehicle);
+                return {
+                    displayName: vehicle.displayName,
+                    latitude: vehicle.latitude,
+                    longitude: vehicle.longitude,
+                    heading: vehicle.heading || 0,
+                    // Add any other properties needed for reverse geocoding
+                    address: null // Will be filled by reverse geocoding
+                };
+            } else {
+                console.warn(`Vehicle with displayName "${displayName}" not found in location data`);
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching vehicle location:', error);
+            return null;
+        }
+    }, []);
+
+    // Update reverseGeocode function to use Overpass API for intersection data
+    const reverseGeocode = useCallback(async (latitude, longitude) => {
+        if (!latitude || !longitude) return null;
+        
+        try {
+            // First try our enhanced reverse geocoding endpoint for general address info
+            const response = await fetch(
+                `/api/geocode/enhanced?lat=${latitude}&lon=${longitude}&radius=1000`,
+                { 
+                    headers: { 
+                        'Accept': 'application/json'
+                    } 
+                }
+            );
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Enhanced reverse geocode result:', data);
+            
+            // Format the closest exit data if available
+            let nearestExit = '';
+            if (data.nearby && data.nearby.closest && data.nearby.closest.exit) {
+                const exit = data.nearby.closest.exit;
+                const exitRef = exit.ref ? `Exit ${exit.ref}` : 'Exit';
+                const exitName = exit.name !== 'Unnamed Exit' ? ` (${exit.name})` : '';
+                const exitTo = exit.exit_to ? ` to ${exit.exit_to}` : '';
+                nearestExit = `Near ${exitRef}${exitName}${exitTo}`;
+            } else if (data.nearby && data.nearby.exits && data.nearby.exits.length > 0) {
+                const exit = data.nearby.exits[0];
+                const exitRef = exit.ref ? `Exit ${exit.ref}` : 'Exit';
+                const exitName = exit.name !== 'Unnamed Exit' ? ` (${exit.name})` : '';
+                const exitTo = exit.exit_to ? ` to ${exit.exit_to}` : '';
+                nearestExit = `Near ${exitRef}${exitName}${exitTo}`;
+            }
+            
+            // Format the closest intersection data from enhanced endpoint if available
+            let nearestIntersection = '';
+            if (data.nearby && data.nearby.closest && data.nearby.closest.intersection) {
+                const intersection = data.nearby.closest.intersection;
+                const distance = intersection.distance < 1000 
+                    ? `${intersection.distance}m` 
+                    : `${(intersection.distance / 1000).toFixed(1)}km`;
+                nearestIntersection = `Near ${intersection.name} (${distance})`;
+            } else if (data.nearby && data.nearby.intersections && data.nearby.intersections.length > 0) {
+                const intersection = data.nearby.intersections[0];
+                const distance = intersection.distance < 1000 
+                    ? `${intersection.distance}m` 
+                    : `${(intersection.distance / 1000).toFixed(1)}km`;
+                nearestIntersection = `Near ${intersection.name} (${distance})`;
+            }
+            
+            // Now use Overpass API to get the next intersection ahead based on heading
+            let nextIntersection = await getNextIntersectionFromOverpass(latitude, longitude, data, 
+                data.addressDetails?.road || (data.addressDetails?.highway) || '', 
+                followedVehicle?.heading || 0);
+            
+            // Return enhanced data including the next intersection
+            return {
+                display_name: data.display_name,
+                addressDetails: data.addressDetails,
+                nearestExit: nearestExit,
+                nearestIntersection: nearestIntersection,
+                nextIntersection: nextIntersection,
+                nearby: data.nearby
+            };
+        } catch (error) {
+            console.error('Error reverse geocoding:', error);
+            
+            // Fallback to basic Nominatim if our enhanced endpoint fails
+            try {
+                const fallbackResponse = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`,
+                    { 
+                        headers: { 
+                            'Accept-Language': 'en',
+                            'User-Agent': 'MerlinMobileApp/1.0'
+                        } 
+                    }
+                );
+                
+                if (!fallbackResponse.ok) {
+                    throw new Error(`HTTP error! status: ${fallbackResponse.status}`);
+                }
+                
+                const fallbackData = await fallbackResponse.json();
+                console.log('Fallback reverse geocode result:', fallbackData);
+                
+                // Even in fallback, try to get next intersection from Overpass
+                let nextIntersection = await getNextIntersectionFromOverpass(latitude, longitude, null,
+                    fallbackData.address?.road || '', followedVehicle?.heading || 0);
+                
+                return {
+                    display_name: fallbackData.display_name,
+                    addressDetails: fallbackData.address,
+                    nearestExit: '',
+                    nearestIntersection: '',
+                    nextIntersection: nextIntersection
+                };
+            } catch (fallbackError) {
+                console.error('Fallback reverse geocoding also failed:', fallbackError);
+                return null;
+            }
+        }
+    }, [followedVehicle]);
+
+    // Function to query Overpass API for the next intersection
+    const getNextIntersectionFromOverpass = async (lat, lon, existingData, currentRoad, heading) => {
+        if (!lat || !lon || !currentRoad) return '';
+        
+        try {
+            // Convert heading to radians for calculations
+            const headingRad = (heading * Math.PI) / 180;
+            
+            // Calculate a bounding box for the query - larger in direction of travel
+            const searchDistance = 0.005; // ~500m
+            const extendedDistance = 0.01; // ~1km in direction of heading
+            
+            // Calculate extended point in direction of heading
+            const extLat = lat + Math.sin(headingRad) * extendedDistance;
+            const extLon = lon + Math.cos(headingRad) * extendedDistance;
+            
+            // Create a bounding box that extends further in direction of travel
+            const minLat = Math.min(lat - searchDistance, extLat - searchDistance);
+            const minLon = Math.min(lon - searchDistance, extLon - searchDistance);
+            const maxLat = Math.max(lat + searchDistance, extLat + searchDistance);
+            const maxLon = Math.max(lon + searchDistance, extLon + searchDistance);
+            
+            // Overpass query to find intersections with the current road
+            const query = `
+                [out:json];
+                way["highway"](${minLat},${minLon},${maxLat},${maxLon});
+                node(w)->.all_nodes;
+                way["name"="${currentRoad}"](${minLat},${minLon},${maxLat},${maxLon})->.current_road;
+                way(around.current_road:5)["highway"]["name"!="${currentRoad}"]->.intersecting_roads;
+                node(w.current_road)(w.intersecting_roads);
+                out body;
+                way(bn);
+                out tags;
+            `;
+            
+            console.log('Sending Overpass query for next intersection:', query);
+            
+            // Send query to Overpass API
+            const response = await fetch('https://overpass-api.de/api/interpreter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `data=${encodeURIComponent(query)}`
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Overpass API response:', data);
+            
+            if (!data.elements || data.elements.length === 0) {
+                return ''; // No intersections found
+            }
+            
+            // Process nodes (intersections)
+            const intersectionNodes = data.elements.filter(el => el.type === 'node');
+            const roadElements = data.elements.filter(el => el.type === 'way');
+            
+            // Map of node id to intersecting road names
+            const nodeToRoads = {};
+            
+            // Build a map of which roads contain which nodes
+            intersectionNodes.forEach(node => {
+                nodeToRoads[node.id] = [];
+            });
+            
+            // Fix: Safely iterate through road nodes, checking for nulls/undefined
+            roadElements.forEach(road => {
+                // Check if road has tags and name property that's different from current road
+                if (road.tags && road.tags.name && road.tags.name !== currentRoad) {
+                    // Make sure the road has nodes property and it's an array
+                    if (road.nodes && Array.isArray(road.nodes)) {
+                        road.nodes.forEach(nodeId => {
+                            // Check if the node exists in our nodeToRoads map before accessing
+                            if (nodeId && nodeToRoads[nodeId]) {
+                                // Check if this road name is already in the array
+                                if (!nodeToRoads[nodeId].includes(road.tags.name)) {
+                                    nodeToRoads[nodeId].push(road.tags.name);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Check if we have any valid intersections
+            if (Object.keys(nodeToRoads).length === 0) {
+                return ''; // No valid intersections found
+            }
+            
+            // Calculate distances and headings to each intersection
+            const intersections = intersectionNodes.map(node => {
+                const dx = node.lon - lon;
+                const dy = node.lat - lat;
+                const distance = Math.sqrt(dx * dx + dy * dy) * 111000; // rough conversion to meters
+                
+                // Calculate angle to the intersection
+                let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                if (angle < 0) angle += 360;
+                
+                // Calculate the angular difference between our heading and intersection direction
+                let headingDiff = Math.abs(angle - heading);
+                if (headingDiff > 180) headingDiff = 360 - headingDiff;
+                
+                // Check if intersection is ahead within a 90-degree arc of current heading
+                const isAhead = headingDiff < 45;
+                
+                return {
+                    id: node.id,
+                    lat: node.lat,
+                    lon: node.lon,
+                    distance: distance,
+                    angle: angle,
+                    headingDiff: headingDiff,
+                    isAhead: isAhead,
+                    intersectingRoads: nodeToRoads[node.id] || []
+                };
+            });
+            
+            // Filter intersections that are ahead in our direction and have intersecting roads
+            const intersectionsAhead = intersections
+                .filter(i => i.isAhead && i.intersectingRoads && i.intersectingRoads.length > 0)
+                .sort((a, b) => a.distance - b.distance);
+            
+            if (!intersectionsAhead || intersectionsAhead.length === 0) {
+                return ''; // No intersections ahead
+            }
+            
+            // Get the closest intersection ahead
+            const nextIntersection = intersectionsAhead[0];
+            const roadNames = nextIntersection.intersectingRoads.join(' & ');
+            const distanceText = nextIntersection.distance < 1000 
+                ? `${Math.round(nextIntersection.distance)}m` 
+                : `${(nextIntersection.distance / 1000).toFixed(1)}km`;
+            
+            return `Next: ${currentRoad} & ${roadNames} (${distanceText})`;
+            
+        } catch (error) {
+            console.error('Error fetching next intersection from Overpass API:', error);
+            // Return empty string on error to avoid UI issues
+            return '';
+        }
+    };
+
+    // Update reverseGeocode effect to store additional information including next intersection
+    useEffect(() => {
+        let isMounted = true;
+        const controller = new AbortController();
+        
+        const updateAddress = async () => {
+            if (followedVehicle && followedVehicle.latitude && followedVehicle.longitude) {
+                try {
+                    console.log('Fetching address for vehicle:', followedVehicle.displayName);
+                    
+                    const addressData = await reverseGeocode(
+                        followedVehicle.latitude, 
+                        followedVehicle.longitude,
+                        controller.signal
+                    );
+                    
+                    if (isMounted && addressData) {
+                        // Update the followedVehicle with address information
+                        setFollowedVehicle(prevState => ({
+                            ...prevState,
+                            address: addressData.display_name,
+                            addressDetails: addressData.addressDetails,
+                            nearestIntersection: addressData.nearestIntersection,
+                            nearestExit: addressData.nearestExit,
+                            nextIntersection: addressData.nextIntersection,
+                            nearbyData: addressData.nearby
+                        }));
+                    }
+                } catch (error) {
+                    console.error('Error updating address:', error);
+                }
+            }
+        };
+        
+        if (followedVehicle && followedVehicle.latitude && followedVehicle.longitude) {
+            updateAddress();
+        }
+        
+        return () => {
+            isMounted = false;
+            controller.abort();
+        };
+    }, [followedVehicle?.latitude, followedVehicle?.longitude, reverseGeocode]);
+
+    // Function to handle tile load errors and switch providers if needed
+    const handleTileError = useCallback(() => {
+        console.error(`Tile loading error with provider: ${currentMapProvider}`);
+        setTileLoadErrors(prev => prev + 1);
+        
+        // If we get too many errors, try switching to a different provider
+        if (tileLoadErrors > 5) {
+            if (darkMode) {
+                // Try different dark mode providers in sequence
+                if (currentMapProvider === 'esriDarkGray') {
+                    console.log('Switching to CartoDB Dark provider');
+                    setCurrentMapProvider('cartoDBDark');
+                } else if (currentMapProvider === 'cartoDBDark') {
+                    console.log('Switching to Stamen Toner provider');
+                    setCurrentMapProvider('stamenToner');
+                } else {
+                    // If all dark providers fail, try OpenStreetMap
+                    setDarkMode(false);
+                    setCurrentMapProvider('openStreetMap');
+                }
+            } else {
+                // If in light mode and having issues, try Google Maps
+                setCurrentMapProvider('googleMaps');
+            }
+            // Reset error counter after switching
+            setTileLoadErrors(0);
+        }
+    }, [currentMapProvider, darkMode, tileLoadErrors]);
+
+    // Get the current tile URL based on mode and provider
+    const getCurrentTileUrl = useCallback(() => {
+        if (darkMode) {
+            return MAP_URLS[currentMapProvider] || MAP_URLS.cartoDBDark;
+        }
+        return MAP_URLS[currentMapProvider] || MAP_URLS.openStreetMap;
+    }, [darkMode, currentMapProvider]);
+
+    // Get attribution based on current provider
+    const getTileAttribution = useCallback(() => {
+        const attributions = {
+            openStreetMap: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            googleMaps: '&copy; Google',
+            googleSatellite: '&copy; Google',
+            googleHybrid: '&copy; Google',
+            cartoDBDark: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+            stamenToner: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>',
+            esriDarkGray: '&copy; <a href="https://www.esri.com/">Esri</a>'
+        };
+        return attributions[currentMapProvider] || attributions.openStreetMap;
+    }, [currentMapProvider]);
+
+    // Add toggle function for dark mode with provider reset
+    const toggleDarkMode = () => {
+        setDarkMode(prev => {
+            const newMode = !prev;
+            // Reset to appropriate provider for the mode
+            setCurrentMapProvider(newMode ? 'cartoDBDark' : 'openStreetMap');
+            setTileLoadErrors(0);
+            return newMode;
+        });
+    };
+
+    // Force map to refresh when changing providers
+    useEffect(() => {
+        if (mapRef.current) {
+            setTimeout(() => {
+                const map = mapRef.current;
+                if (map && map.invalidateSize) {
+                    console.log('Invalidating map size after provider change');
+                    map.invalidateSize(true);
+                }
+            }, 100);
+        }
+    }, [currentMapProvider, darkMode]);
+
+    // Updated saveMarker function to work with the new modal
+    const saveMarker = async (markerName) => {
+        if (!tempMarkerPosition || !markerName.trim()) return;
+        
+        try {
+            // Get user data from URL or state
+            const currentUser = getUserFromUrl() || user;
+            
+            // Create a new marker object
+            const newMarker = {
+                id: Date.now().toString(), // Simple unique ID
+                latitude: tempMarkerPosition[0],
+                longitude: tempMarkerPosition[1],
+                name: markerName, // Use the name provided by the user
+                createdBy: currentUser.userName || "Unknown User",
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add to local state first for immediate feedback
+            setMarkers(prev => [...prev, newMarker]);
+            
+            // Send the marker to the server to broadcast to all users
+            const response = await fetch('/api/tempmarkers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(newMarker)
+            });
+            
+            if (!response.ok) {
+                console.error('Failed to save temp marker on server:', await response.text());
+                // Keep the marker locally even if server sync fails
+            }
+            
+            // Reset temporary state
+            setTempMarkerPosition(null);
+            setShowNameModal(false);
+            
+            // Re-disable panning if no vehicle is being followed
+            if (!followedVehicle) {
+                setDisablePan(true);
+            }
+            
+        } catch (error) {
+            console.error('Error saving temp marker:', error);
+            // Keep the marker locally even if there's an error
+        }
+    };
+    
+    // Function to delete a marker
+    const deleteMarker = async (markerId) => {
+        // Remove from local state immediately for responsive UI
+        setMarkers(prev => prev.filter(marker => marker.id !== markerId));
+        
+        try {
+            // Send delete request to server
+            const response = await fetch(`/api/tempmarkers/${markerId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                console.error('Failed to delete temp marker on server:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error deleting temp marker:', error);
+        }
+    };
+
+    // Function to fetch all markers from the server
+    const fetchMarkers = async () => {
+        try {
+            const response = await fetch('/api/tempmarkers', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            setMarkers(data);
+        } catch (error) {
+            console.error('Error fetching temp markers:', error);
+        }
+    };
+
+    // Add a helper function to extract user from URL
+    const getUserFromUrl = () => {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+            
+            if (userParam) {
+                return JSON.parse(decodeURIComponent(userParam));
+            }
+            return null;
+        } catch (error) {
+            console.error('Error parsing user from URL:', error);
+            return null;
+        }
+    };
+
+    // Extract style objects
+    const statusBarStyles = {
+        glassEffect: {
+            backgroundColor: 'rgba(25, 25, 25, 0.8)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            borderRadius: '20px',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+            border: '1px solid rgba(255, 255, 255, 0.15)'
+        },
+        // ... other styles
+    };
+
+    // Memoize the StatusBar component
+    const MemoizedStatusBar = React.memo(StatusBar);
+
+    useEffect(() => {
+        // Check if the style element already exists
+        let styleElement = document.getElementById('map-tile-styles');
+        
+        if (!styleElement) {
+            // Create it if it doesn't exist
+            styleElement = document.createElement('style');
+            styleElement.id = 'map-tile-styles';
+            document.head.appendChild(styleElement);
+        }
+        
+        // Update the content
+        styleElement.textContent = `
+            .leaflet-tile {
+                transition: opacity 0.25s ease-in-out;
+            }
+            .leaflet-container {
+                background-color: ${darkMode ? '#121212' : '#f8f8f8'} !important;
+            }
+        `;
+        
+        return () => {
+            // Only remove if this is the last instance
+            if (document.getElementById('map-tile-styles')) {
+                document.head.removeChild(styleElement);
+            }
+        };
+    }, [darkMode]);
+
+    // Add this state at the top level of the component, with other state declarations
+    const [expandedNotifications, setExpandedNotifications] = useState({});
+
+    return (
+        <div style={{ 
+            height: '100vh', 
+            width: '100%', 
+            position: 'relative',
+            backgroundColor: darkMode ? '#121212' : '#ffffff'
+        }}>
+            <MapContainer
+                center={[41.0793, -73.8803]}
+                zoom={16}
+                minZoom={15}
+                maxZoom={18}
+                zoomControl={false}
+                style={{ 
+                    height: '100%', 
+                    width: '100%',
+                    backgroundColor: darkMode ? '#121212' : '#f8f8f8'
+                }}
+                ref={mapRef}
+            >
+                {/* Updated TileLayer with better error handling */}
+                <TileLayer 
+                    key={`tile-layer-${currentMapProvider}-${darkMode ? 'dark' : 'light'}`}
+                    url={getCurrentTileUrl()}
+                    attribution={getTileAttribution()}
+                    eventHandlers={{
+                        tileerror: (error) => {
+                            console.error('Tile loading error:', error);
+                            handleTileError();
+                        },
+                        tileload: () => {
+                            // Reset error counter when tiles load successfully
+                            if (tileLoadErrors > 0) {
+                                setTileLoadErrors(0);
+                            }
+                        }
+                    }}
+                />
+                
+                <LocationFinder />
+                <MapConstraints followedVehicle={followedVehicle} disablePan={disablePan} />
+                <ZoomHandler onZoomChange={handleZoomChange} />
+                <ZoomControls />
+                
+                <VehicleLayer
+                    setVehicles={setVehicles}
+                    showPoliceGPS={true}
+                    showFireGPS={true}
+                    showTooltips={true}
+                    tooltipFontSize={14}
+                    mobileMode={true}
+                    setFollowedVehicle={handleVehicleFollow}
+                    followedVehicle={followedVehicle}
+                    user={user}
+                    overridePermissions={true}
+                />
+                
+                {/* Add the marker components */}
+                <MapMarker 
+                    isMarkingMode={isMarkingMode} 
+                    setIsMarkingMode={setIsMarkingMode}
+                    setShowNameModal={setShowNameModal}
+                    setTempMarkerPosition={setTempMarkerPosition}
+                />
+                
+                {/* Show temporary marker while placing */}
+                {tempMarkerPosition && (
+                    <Marker position={tempMarkerPosition} icon={redPinMarkerIcon} />
+                )}
+                
+                {/* Display all saved markers */}
+                <MarkersLayer 
+                    markers={markers} 
+                    onMarkerDelete={deleteMarker}
+                    user={user}
+                />
+                
+                {/* Add this component to handle tile loading */}
+                <TileLoadingHandler 
+                    darkMode={darkMode} 
+                    getCurrentTileUrl={getCurrentTileUrl} 
+                />
+                
+                {/* Add the MarkerStyles component */}
+                <MarkerStyles />
+            </MapContainer>
+            
+            {/* Updated Header with darkMode toggle */}
+            <Header 
+                user={user} 
+                darkMode={darkMode} 
+                toggleDarkMode={toggleDarkMode} 
+            />
+            
+            {/* Status bar in the middle */}
+            <MemoizedStatusBar followedVehicle={followedVehicle} />
+            
+            {/* Left button container */}
+            <div style={{
+                position: 'fixed',
+                bottom: '15px',
+                left: '15px',
+                zIndex: 1000
+            }}>
+                <button 
+                    className="mobile-button"
+                    style={{
+                        backgroundColor: isMarkingMode ? 'rgba(220, 53, 69, 0.8)' : 'rgba(25, 25, 25, 0.7)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        color: 'white',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '18px', // Reduced from 20px
+                        padding: '6px 12px',   // Reduced from 8px 14px
+                        fontSize: '12px',      // Reduced from 13px
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '32px',        // Reduced from 36px
+                        whiteSpace: 'nowrap'
+                    }}
+                    onClick={isMarkingMode ? () => setIsMarkingMode(false) : handleCreateMarker}
+                >
+                    <span style={{ marginRight: '5px', fontSize: '13px' }}>
+                        {isMarkingMode ? '✕' : '📍'}
+                    </span>
+                    {isMarkingMode ? 'Cancel' : 'Mark'}
+                </button>
+            </div>
+            
+            {/* Right button container */}
+            <div style={{
+                position: 'fixed',
+                bottom: '15px',
+                right: '15px',
+                zIndex: 1000
+            }}>
+                <button 
+                    className="mobile-button"
+                    style={{
+                        backgroundColor: 'rgba(25, 25, 25, 0.7)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        color: 'white',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '18px', // Reduced from 20px
+                        padding: '6px 12px',   // Reduced from 8px 14px
+                        fontSize: '12px',      // Reduced from 13px
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '32px',        // Reduced from 36px
+                        whiteSpace: 'nowrap'
+                    }}
+                    onClick={toggleMobileMode}
+                >
+                    <span style={{ marginRight: '5px', fontSize: '13px' }}>🖥️</span>
+                    Desktop
+                </button>
+            </div>
+            
+            {showEditMarkersModal && (
+                <EditMarkersModal
+                    show={showEditMarkersModal}
+                    handleClose={() => setShowEditMarkersModal(false)}
+                    user={user}
+                />
+            )}
+            
+            {/* Updated Marker naming modal */}
+            <MarkerNameModal
+                show={showNameModal}
+                onClose={() => {
+                    setShowNameModal(false);
+                    setTempMarkerPosition(null);
+                    // Re-disable panning if no vehicle is being followed
+                    if (!followedVehicle) {
+                        setDisablePan(true);
+                    }
+                }}
+                onSave={saveMarker}
+            />
+            
+            {/* Visual indicator when in marking mode */}
+            {isMarkingMode && (
+                <div style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                    color: 'white',
+                    padding: '10px 20px',
+                    borderRadius: '20px',
+                    fontWeight: 'bold',
+                    zIndex: 1000,
+                    pointerEvents: 'none'
+                }}>
+                    Tap on the map to place marker
+                </div>
+            )}
+        </div>
+    );
+};
+
+// Add missing ZoomHandler component
+function ZoomHandler({ onZoomChange }) {
+    const map = useMapEvents({
+        zoomend: () => {
+            const zoom = map.getZoom();
+            console.log('Current zoom level:', zoom);
+            onZoomChange(zoom);
+        },
+    });
+    return null;
+}
+
+// Update the TileLoadingHandler to accept getCurrentTileUrl as a prop
+function TileLoadingHandler({ darkMode, getCurrentTileUrl }) {
+    const map = useMap();
+    
+    useEffect(() => {
+        // Check if the style element already exists
+        let styleElement = document.getElementById('map-tile-styles');
+        
+        if (!styleElement) {
+            // Create it if it doesn't exist
+            styleElement = document.createElement('style');
+            styleElement.id = 'map-tile-styles';
+            document.head.appendChild(styleElement);
+        }
+        
+        // Update the content
+        styleElement.textContent = `
+            .leaflet-tile {
+                transition: opacity 0.25s ease-in-out;
+            }
+            .leaflet-container {
+                background-color: ${darkMode ? '#121212' : '#f8f8f8'} !important;
+            }
+        `;
+        
+        return () => {
+            // Only remove if this is the last instance
+            if (document.getElementById('map-tile-styles')) {
+                document.head.removeChild(styleElement);
+            }
+        };
+    }, [darkMode]);
+    
+    return null;
+}
+
+console.log('MobileMap.js loaded', new Date().toISOString());
+
+export default MobileMap; 

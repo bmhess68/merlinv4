@@ -1,0 +1,14 @@
+Added FD/EMS vehicles
+Changed Modals to modern styling
+Added Starchase tracking layer (Still in Alpha)
+Added ability to turn off labels
+Better audit logs
+New User interface
+    All SLACK users can now login to blank interface    
+    Admin must give permissions
+    Done thru Settings button visible to Admin
+    Also can edit Database fields and reset Zello/Merlin services
+New Icons for vehicles
+Improved Roster Interface (Wider)
+Follow- Click on a icon and the map will lock onto that unit and follow him/her on the map.
+Address Search - Added address search to Vehicle search interface

@@ -1,0 +1,741 @@
+/*
+ * ===========================================================================
+ * DEPRECATED - DO NOT USE
+ * ===========================================================================
+ * 
+ * This file is deprecated and has been replaced by the Mapbox implementation.
+ * Please use src/components/mapbox/MapboxMobileMap.js instead.
+ * 
+ * This file is kept for reference purposes only and may be removed in the future.
+ * ===========================================================================
+ */
+
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet-rotatedmarker';
+import '../../App.css';
+import io from 'socket.io-client';
+import { debounce } from 'lodash';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Import components
+import Header from './Header';
+import StatusBar from './StatusBar';
+import ZoomControls from './ZoomControls';
+import MapConstraints from './MapConstraints';
+import { MarkersLayer, MapMarker, MarkerStyles, LocationFinder, redPinMarkerIcon } from './MarkerComponents';
+import { TileLoadingHandler } from './TileLayerComponents';
+import MarkerNameModal from './modals/MarkerNameModal';
+import VehicleLayer from '../VehicleLayer'; // Assuming VehicleLayer remains at original location
+
+// Import utility functions
+import { MAP_URLS, getUserFromUrl, getTileAttribution, ZoomHandler } from './utils/mapUtils';
+import { reverseGeocode, fetchVehicleLocation } from './utils/geocodingUtils';
+
+// Fix default icons
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+// Fix default icons (same as in your MapPage.js)
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: markerIcon2x,
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow
+});
+
+// Create a singleton socket instance at the module level
+let globalSocket = null;
+
+// Add a DrivingModeHandler component to update the map view based on vehicle movement
+const DrivingModeHandler = ({ 
+  isDrivingMode, 
+  followedVehicle
+}) => {
+  const map = useMap();
+  const prevPositionRef = useRef(null);
+  const prevZoomRef = useRef(null);
+  
+  // Log the initial zoom level when component mounts
+  useEffect(() => {
+    const currentZoom = map.getZoom();
+    console.log('DrivingModeHandler: Initial map zoom level:', currentZoom);
+    prevZoomRef.current = currentZoom;
+  }, [map]);
+  
+  useEffect(() => {
+    // Always track if followedVehicle exists, regardless of isDrivingMode
+    if (!followedVehicle || !followedVehicle.latitude || !followedVehicle.longitude) {
+      return;
+    }
+    
+    const position = [followedVehicle.latitude, followedVehicle.longitude];
+    const currentZoom = map.getZoom();
+    
+    console.log('DrivingModeHandler: Vehicle update - Current zoom:', currentZoom);
+    
+    // Only update map center if position changed significantly
+    if (!prevPositionRef.current || 
+        haversineDistance(prevPositionRef.current, position) > 0.01) { // 10 meters threshold
+      
+      // Set the map view to the vehicle's position without animation in driving mode
+      // to avoid unnecessary movements, but preserve the current zoom level
+      console.log('DrivingModeHandler: Repositioning map to follow vehicle. Maintaining zoom at:', currentZoom);
+      map.setView(position, currentZoom, {
+        animate: false,
+        duration: 0
+      });
+      
+      prevPositionRef.current = position;
+      prevZoomRef.current = currentZoom;
+    }
+    
+    // Set up interval to continuously check if we need to re-center
+    const interval = setInterval(() => {
+      if (followedVehicle && followedVehicle.latitude && followedVehicle.longitude) {
+        const currentPos = [followedVehicle.latitude, followedVehicle.longitude];
+        const mapCenter = map.getCenter();
+        const centerPos = [mapCenter.lat, mapCenter.lng];
+        const currentMapZoom = map.getZoom();
+        
+        // If map has been panned away from vehicle, re-center it
+        if (haversineDistance(centerPos, currentPos) > 0.05) { // 50 meters threshold
+          console.log('DrivingModeHandler: Re-centering map. Current zoom:', currentMapZoom);
+          map.setView(currentPos, currentMapZoom, {
+            animate: true,
+            duration: 0.5
+          });
+        }
+        
+        // If zoom has changed, log it
+        if (prevZoomRef.current !== currentMapZoom) {
+          console.log('DrivingModeHandler: Zoom changed from', prevZoomRef.current, 'to', currentMapZoom);
+          prevZoomRef.current = currentMapZoom;
+        }
+      }
+    }, 2000); // Check every 2 seconds
+    
+    return () => {
+      clearInterval(interval);
+    };
+  }, [followedVehicle, map]); // Removed isDrivingMode dependency since we always want tracking
+  
+  // Add a zoom change listener to track zoom events
+  useEffect(() => {
+    const zoomChangeListener = () => {
+      const newZoom = map.getZoom();
+      console.log('DrivingModeHandler: Map zoom changed to:', newZoom);
+    };
+    
+    map.on('zoomend', zoomChangeListener);
+    
+    return () => {
+      map.off('zoomend', zoomChangeListener);
+    };
+  }, [map]);
+  
+  return null;
+};
+
+// Haversine distance calculation function (in kilometers)
+function haversineDistance(coord1, coord2) {
+  const R = 6371; // Earth's radius in km
+  const dLat = (coord2[0] - coord1[0]) * Math.PI / 180;
+  const dLon = (coord2[1] - coord1[1]) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(coord1[0] * Math.PI / 180) * Math.cos(coord2[0] * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+const MobileMap = ({ user, toggleMobileMode }) => {
+    const [showEditMarkersModal, setShowEditMarkersModal] = useState(false);
+    const [vehicles, setVehicles] = useState([]);
+    const [followedVehicle, setFollowedVehicle] = useState(null);
+    const [currentZoom, setCurrentZoom] = useState(18);
+    const [selectedMapType, setSelectedMapType] = useState('googleMaps');
+    const mapRef = useRef(null);
+    const [darkMode, setDarkMode] = useState(false);
+    const [tileLoadErrors, setTileLoadErrors] = useState(0);
+    const [currentMapProvider, setCurrentMapProvider] = useState('openStreetMap');
+    const [disablePan, setDisablePan] = useState(true); // Start with panning disabled
+    
+    // New state variables for marker functionality
+    const [isMarkingMode, setIsMarkingMode] = useState(false);
+    const [showNameModal, setShowNameModal] = useState(false);
+    const [tempMarkerPosition, setTempMarkerPosition] = useState(null);
+    const [markers, setMarkers] = useState([]);
+    
+    // Always in driving mode
+    const [isDrivingMode, setIsDrivingMode] = useState(true);
+    
+    const intervalRef = useRef(null);
+    const [expandedNotifications, setExpandedNotifications] = useState({});
+
+    const adjustButtonsForOrientationRef = useRef(() => {
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const buttons = document.querySelectorAll('.mobile-button');
+        
+        buttons.forEach(button => {
+            if (isPortrait) {
+                button.style.padding = '6px 12px';
+                button.style.fontSize = '12px';
+                button.style.height = '32px';
+            } else {
+                button.style.padding = '8px 16px';
+                button.style.fontSize = '14px';
+                button.style.height = '40px';
+            }
+        });
+    });
+
+    useEffect(() => {
+        const adjustButtonsForOrientation = adjustButtonsForOrientationRef.current;
+        
+        // Add orientation change listener
+        window.addEventListener('resize', adjustButtonsForOrientation);
+        
+        // Initial adjustment
+        adjustButtonsForOrientation();
+        
+        // Cleanup
+        return () => {
+            window.removeEventListener('resize', adjustButtonsForOrientation);
+        };
+    }, []);
+
+    // Function to handle when a vehicle is selected for following
+    const handleVehicleFollow = async (vehicle) => {
+        console.log("Vehicle selected for following:", vehicle);
+        
+        // Set optimal zoom level for driving
+        if (mapRef.current) {
+            const map = mapRef.current;
+            if (map.getZoom() < 17) {
+                map.setZoom(17);
+            }
+        }
+        
+        // If we just have the displayName (string)
+        if (typeof vehicle === 'string') {
+            // Fetch the complete vehicle data
+            const vehicleData = await fetchVehicleLocation(vehicle);
+            if (vehicleData) {
+                setFollowedVehicle(vehicleData);
+            } else {
+                // Fallback to just the display name if we can't get the data
+                setFollowedVehicle({ displayName: vehicle });
+            }
+        } 
+        // If we have a vehicle object but missing lat/long
+        else if (typeof vehicle === 'object' && 
+                 (!vehicle.latitude || !vehicle.longitude)) {
+            const vehicleData = await fetchVehicleLocation(vehicle.displayName);
+            if (vehicleData) {
+                setFollowedVehicle(vehicleData);
+            } else {
+                setFollowedVehicle(vehicle);
+            }
+        }
+        // If we have a complete vehicle object
+        else {
+            setFollowedVehicle(vehicle);
+        }
+    };
+    
+    // Function to handle marker creation
+    const handleCreateMarker = () => {
+        setIsMarkingMode(true);
+        // Enable panning temporarily while in marking mode
+        setDisablePan(false);
+    };
+    
+    // Function to handle tile load errors and switch providers if needed
+    const handleTileError = useCallback(() => {
+        console.error(`Tile loading error with provider: ${currentMapProvider}`);
+        setTileLoadErrors(prev => prev + 1);
+        
+        // If we get too many errors, try switching to a different provider
+        if (tileLoadErrors > 5) {
+            if (darkMode) {
+                // Try different dark mode providers in sequence
+                if (currentMapProvider === 'esriDarkGray') {
+                    console.log('Switching to CartoDB Dark provider');
+                    setCurrentMapProvider('cartoDBDark');
+                } else if (currentMapProvider === 'cartoDBDark') {
+                    console.log('Switching to Stamen Toner provider');
+                    setCurrentMapProvider('stamenToner');
+                } else {
+                    // If all dark providers fail, try OpenStreetMap
+                    setDarkMode(false);
+                    setCurrentMapProvider('openStreetMap');
+                }
+            } else {
+                // If in light mode and having issues, try Google Maps
+                setCurrentMapProvider('googleMaps');
+            }
+            // Reset error counter after switching
+            setTileLoadErrors(0);
+        }
+    }, [currentMapProvider, darkMode, tileLoadErrors]);
+
+    // Get the current tile URL based on mode and provider
+    const getCurrentTileUrl = useCallback(() => {
+        if (darkMode) {
+            return MAP_URLS[currentMapProvider] || MAP_URLS.cartoDBDark;
+        }
+        return MAP_URLS[currentMapProvider] || MAP_URLS.openStreetMap;
+    }, [darkMode, currentMapProvider]);
+
+    // Add toggle function for dark mode with provider reset
+    const toggleDarkMode = () => {
+        setDarkMode(prev => {
+            const newMode = !prev;
+            // Reset to appropriate provider for the mode
+            setCurrentMapProvider(newMode ? 'cartoDBDark' : 'openStreetMap');
+            setTileLoadErrors(0);
+            return newMode;
+        });
+    };
+
+    // Force map to refresh when changing providers
+    useEffect(() => {
+        if (mapRef.current) {
+            setTimeout(() => {
+                const map = mapRef.current;
+                if (map && map.invalidateSize) {
+                    console.log('Invalidating map size after provider change');
+                    map.invalidateSize(true);
+                }
+            }, 100);
+        }
+    }, [currentMapProvider, darkMode]);
+
+    // Function to update current zoom
+    const handleZoomChange = (newZoom) => {
+        console.log('Zoom changed to:', newZoom);
+        setCurrentZoom(newZoom);
+    };
+
+    // Updated saveMarker function to work with the new modal
+    const saveMarker = async (markerName) => {
+        if (!tempMarkerPosition || !markerName.trim()) return;
+        
+        try {
+            // Get user data from URL or state
+            const currentUser = getUserFromUrl() || user;
+            
+            // Create a new marker object
+            const newMarker = {
+                id: Date.now().toString(), // Simple unique ID
+                latitude: tempMarkerPosition[0],
+                longitude: tempMarkerPosition[1],
+                name: markerName, // Use the name provided by the user
+                createdBy: currentUser.userName || "Unknown User",
+                createdAt: new Date().toISOString()
+            };
+            
+            // Add to local state first for immediate feedback
+            setMarkers(prev => [...prev, newMarker]);
+            
+            // Send the marker to the server to broadcast to all users
+            const response = await fetch('/api/tempmarkers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(newMarker)
+            });
+            
+            if (!response.ok) {
+                console.error('Failed to save temp marker on server:', await response.text());
+                // Keep the marker locally even if server sync fails
+            }
+            
+            // Reset temporary state
+            setTempMarkerPosition(null);
+            setShowNameModal(false);
+            
+            // Re-disable panning if no vehicle is being followed
+            if (!followedVehicle) {
+                setDisablePan(true);
+            }
+            
+        } catch (error) {
+            console.error('Error saving temp marker:', error);
+            // Keep the marker locally even if there's an error
+        }
+    };
+    
+    // Function to delete a marker
+    const deleteMarker = async (markerId) => {
+        // Remove from local state immediately for responsive UI
+        setMarkers(prev => prev.filter(marker => marker.id !== markerId));
+        
+        try {
+            // Send delete request to server
+            const response = await fetch(`/api/tempmarkers/${markerId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                console.error('Failed to delete temp marker on server:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error deleting temp marker:', error);
+        }
+    };
+
+    // Function to fetch all markers from the server
+    const fetchMarkers = async () => {
+        try {
+            const response = await fetch('/api/tempmarkers', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            setMarkers(data);
+        } catch (error) {
+            console.error('Error fetching temp markers:', error);
+        }
+    };
+
+    // Update reverseGeocode effect to store additional information including next intersection
+    useEffect(() => {
+        let isMounted = true;
+        const controller = new AbortController();
+        
+        const updateAddress = async () => {
+            if (followedVehicle && followedVehicle.latitude && followedVehicle.longitude) {
+                try {
+                    console.log('Fetching address for vehicle:', followedVehicle.displayName, 'heading:', followedVehicle.heading);
+                    
+                    const addressData = await reverseGeocode(
+                        followedVehicle.latitude, 
+                        followedVehicle.longitude,
+                        controller.signal,
+                        followedVehicle.heading || 0
+                    );
+                    
+                    if (isMounted && addressData) {
+                        // Update the followedVehicle with address information
+                        setFollowedVehicle(prevState => ({
+                            ...prevState,
+                            address: addressData.display_name,
+                            addressDetails: addressData.addressDetails,
+                            nearestIntersection: addressData.nearestIntersection,
+                            nearestExit: addressData.nearestExit,
+                            nextIntersection: addressData.nextIntersection,
+                            nearbyData: addressData.nearby
+                        }));
+                    }
+                } catch (error) {
+                    console.error('Error updating address:', error);
+                }
+            }
+        };
+        
+        if (followedVehicle && followedVehicle.latitude && followedVehicle.longitude) {
+            updateAddress();
+            
+            // Set up a timer to refresh intersection data every 10 seconds
+            // This is important for keeping the "next intersection" data updated as the vehicle moves
+            const timer = setInterval(() => {
+                if (isMounted && followedVehicle && followedVehicle.latitude && followedVehicle.longitude) {
+                    updateAddress();
+                }
+            }, 10000); // Refresh every 10 seconds
+            
+            return () => {
+                isMounted = false;
+                controller.abort();
+                clearInterval(timer);
+            };
+        }
+        
+        return () => {
+            isMounted = false;
+            controller.abort();
+        };
+    }, [followedVehicle?.latitude, followedVehicle?.longitude, followedVehicle?.heading, reverseGeocode]);
+
+    // Fetch markers when component mounts
+    useEffect(() => {
+        fetchMarkers();
+        
+        // Set up socket connection for real-time marker updates
+        if (!globalSocket) {
+            try {
+                globalSocket = io();
+                
+                globalSocket.on('tempMarkerAdded', (newMarker) => {
+                    console.log('New temp marker received:', newMarker);
+                    setMarkers(prev => {
+                        // Check if marker already exists
+                        if (prev.some(m => m.id === newMarker.id)) {
+                            return prev;
+                        }
+                        return [...prev, newMarker];
+                    });
+                });
+                
+                globalSocket.on('tempMarkerDeleted', (markerId) => {
+                    console.log('Temp marker deleted:', markerId);
+                    setMarkers(prev => prev.filter(m => m.id !== markerId));
+                });
+                
+            } catch (error) {
+                console.error('Error connecting to socket server:', error);
+            }
+        }
+        
+        return () => {
+            // Don't disconnect the socket when unmounting as it may be used by other components
+            // We'll let it be managed globally
+        };
+    }, []);
+
+    return (
+        <div style={{ 
+            height: '100vh', 
+            width: '100%', 
+            position: 'relative',
+            backgroundColor: darkMode ? '#121212' : '#ffffff'
+        }}>
+            <MapContainer
+                center={[41.0793, -73.8803]}
+                zoom={16}
+                minZoom={15}
+                maxZoom={18}
+                zoomControl={false}
+                style={{ 
+                    height: '100%', 
+                    width: '100%',
+                    backgroundColor: darkMode ? '#121212' : '#f8f8f8'
+                }}
+                ref={mapRef}
+            >
+                {/* Updated TileLayer with better error handling */}
+                <TileLayer 
+                    key={`tile-layer-${currentMapProvider}-${darkMode ? 'dark' : 'light'}`}
+                    url={getCurrentTileUrl()}
+                    attribution={getTileAttribution(currentMapProvider)}
+                    eventHandlers={{
+                        tileerror: (error) => {
+                            console.error('Tile loading error:', error);
+                            handleTileError();
+                        },
+                        tileload: () => {
+                            // Reset error counter when tiles load successfully
+                            if (tileLoadErrors > 0) {
+                                setTileLoadErrors(0);
+                            }
+                        }
+                    }}
+                />
+                
+                <LocationFinder />
+                <MapConstraints followedVehicle={followedVehicle} disablePan={disablePan} />
+                <ZoomHandler onZoomChange={handleZoomChange} />
+                <ZoomControls />
+                
+                {/* Always in driving mode */}
+                <DrivingModeHandler 
+                    isDrivingMode={true}
+                    followedVehicle={followedVehicle}
+                />
+                
+                <VehicleLayer
+                    setVehicles={setVehicles}
+                    showPoliceGPS={true}
+                    showFireGPS={true}
+                    showTooltips={true}
+                    tooltipFontSize={14}
+                    mobileMode={true}
+                    drivingMode={true}
+                    setFollowedVehicle={handleVehicleFollow}
+                    followedVehicle={followedVehicle}
+                    user={user}
+                    overridePermissions={true}
+                />
+                
+                {/* Add the marker components */}
+                <MapMarker 
+                    isMarkingMode={isMarkingMode} 
+                    setIsMarkingMode={setIsMarkingMode}
+                    setShowNameModal={setShowNameModal}
+                    setTempMarkerPosition={setTempMarkerPosition}
+                />
+                
+                {/* Show temporary marker while placing */}
+                {tempMarkerPosition && (
+                    <Marker position={tempMarkerPosition} icon={redPinMarkerIcon} />
+                )}
+                
+                {/* Display all saved markers */}
+                <MarkersLayer 
+                    markers={markers} 
+                    onMarkerDelete={deleteMarker}
+                    user={user}
+                />
+                
+                {/* Add this component to handle tile loading */}
+                <TileLoadingHandler 
+                    darkMode={darkMode} 
+                    getCurrentTileUrl={getCurrentTileUrl} 
+                />
+                
+                {/* Add the MarkerStyles component */}
+                <MarkerStyles />
+            </MapContainer>
+            
+            {/* Updated Header with darkMode toggle */}
+            <Header 
+                user={user} 
+                darkMode={darkMode} 
+                toggleDarkMode={toggleDarkMode} 
+            />
+            
+            {/* Status bar in the middle */}
+            <StatusBar followedVehicle={followedVehicle} />
+            
+            {/* Left button container */}
+            <div style={{
+                position: 'fixed',
+                bottom: '15px',
+                left: '15px',
+                zIndex: 1000
+            }}>
+                <button 
+                    className="mobile-button"
+                    style={{
+                        backgroundColor: isMarkingMode ? 'rgba(220, 53, 69, 0.8)' : 'rgba(25, 25, 25, 0.7)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        color: 'white',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '18px', // Reduced from 20px
+                        padding: '6px 12px',   // Reduced from 8px 14px
+                        fontSize: '12px',      // Reduced from 13px
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '32px',        // Reduced from 36px
+                        whiteSpace: 'nowrap'
+                    }}
+                    onClick={isMarkingMode ? () => setIsMarkingMode(false) : handleCreateMarker}
+                >
+                    <span style={{ marginRight: '5px', fontSize: '13px' }}>
+                        {isMarkingMode ? '✕' : '📍'}
+                    </span>
+                    {isMarkingMode ? 'Cancel' : 'Mark'}
+                </button>
+            </div>
+            
+            {/* Always in Driving mode indicator */}
+            <div style={{
+                position: 'fixed',
+                top: '70px',  // Below the header
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                color: 'white',
+                padding: '5px 15px',
+                borderRadius: '16px',
+                fontWeight: 'bold',
+                zIndex: 1001,
+                fontSize: '12px',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+            }}>
+                Driving Mode Active
+            </div>
+            
+            {/* Right button container */}
+            <div style={{
+                position: 'fixed',
+                bottom: '15px',
+                right: '15px',
+                zIndex: 1000
+            }}>
+                <button 
+                    className="mobile-button"
+                    style={{
+                        backgroundColor: 'rgba(25, 25, 25, 0.7)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        color: 'white',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                        borderRadius: '18px', // Reduced from 20px
+                        padding: '6px 12px',   // Reduced from 8px 14px
+                        fontSize: '12px',      // Reduced from 13px
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '32px',        // Reduced from 36px
+                        whiteSpace: 'nowrap'
+                    }}
+                    onClick={toggleMobileMode}
+                >
+                    <span style={{ marginRight: '5px', fontSize: '13px' }}>🖥️</span>
+                    Desktop
+                </button>
+            </div>
+            
+            {/* Marker naming modal */}
+            <MarkerNameModal
+                show={showNameModal}
+                onClose={() => {
+                    setShowNameModal(false);
+                    setTempMarkerPosition(null);
+                }}
+                onSave={saveMarker}
+            />
+            
+            {/* Visual indicator when in marking mode */}
+            {isMarkingMode && (
+                <div style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                    color: 'white',
+                    padding: '10px 20px',
+                    borderRadius: '20px',
+                    fontWeight: 'bold',
+                    zIndex: 1000,
+                    pointerEvents: 'none'
+                }}>
+                    Tap on the map to place marker
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default MobileMap; 

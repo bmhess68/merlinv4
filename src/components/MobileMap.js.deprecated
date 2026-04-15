@@ -1,0 +1,22 @@
+/*
+ * ===========================================================================
+ * DEPRECATED - DO NOT USE
+ * ===========================================================================
+ * 
+ * This file is deprecated and has been replaced by the Mapbox implementation.
+ * Please use src/components/mapbox/MapboxMobileMap.js instead.
+ * 
+ * This file is kept for reference purposes only and may be removed in the future.
+ * ===========================================================================
+ */
+
+// This file re-exports the refactored MobileMap component from the new location
+// Keeping the same import path ensures compatibility with existing code
+
+import MobileMap from './mobile/MobileMap';
+
+// Export everything from the new module
+export default MobileMap; 
+
+// Also re-export any named exports if needed
+export * from './mobile/MobileMap'; 

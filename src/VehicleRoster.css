@@ -1,0 +1,134 @@
+/* Ensure the background image covers the entire viewport */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: #ffffff; /* Ensure text is visible */
+    background: url('/images/background.jpg') no-repeat center center fixed; /* Background image */
+    background-size: cover; /* Make sure the background covers the whole page */
+    height: 100%;
+}
+
+/* Container for centering content */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ffffff;
+}
+
+/* Card for content box with semi-transparent background */
+.card {
+    background-color: rgba(0, 0, 0, 0.85); /* Dark, semi-transparent background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-width: 1000px;
+    width: 100%;
+}
+
+/* Header and title styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#logo, #rtclogo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.incident-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+}
+
+/* Form, table, and buttons styling */
+.select, .input, .button-add-person, .sort-button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #333;
+    color: #fff;
+}
+
+.select:hover, .input:hover, .button-add-person:hover, .sort-button:hover {
+    background-color: #444; /* Lighter on hover */
+}
+
+.button-add-person, .button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button-add-person:hover, .button:hover {
+    background-color: #0056b3;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #222; /* Darker table background */
+    margin-bottom: 20px;
+}
+
+.th, .td {
+    border-bottom: 2px solid #444;
+    padding: 10px;
+    text-align: left;
+    color: #ffffff;
+    background-color: #2a2a2a;
+}
+
+.scroll-box {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #444;
+}
+
+/* Flexbox for aligning view selector and sort button */
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.viewSelector {
+    display: flex;
+    align-items: center;
+}
+
+.viewSelector label {
+    margin-right: 10px;
+}
+
+/* Styling for the sort button */
+.sort-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sort-button:hover {
+    background-color: #0056b3;
+}

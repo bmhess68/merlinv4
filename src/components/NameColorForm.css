@@ -1,0 +1,217 @@
+/* Add modal positioning */
+
+.name-color-modal .modal-content {
+    background-color: rgba(40, 44, 52, 0.95) !important;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    max-width: 320px;
+    margin: 0 auto;
+    color: white;
+}
+
+.name-color-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 20px;
+}
+
+.name-color-modal .modal-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.name-color-modal .modal-body {
+    padding: 15px 20px;
+}
+
+/* Update form controls to match LayerControlModal */
+.name-color-modal .form-label {
+    font-size: 14px;
+    color: white;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.name-color-modal .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white !important;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.name-color-modal .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    box-shadow: none;
+}
+
+.name-color-modal .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Update color options styling */
+.name-color-modal .color-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.name-color-modal .color-options div {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.name-color-modal .color-options div:hover {
+    transform: scale(1.1);
+}
+
+.name-color-modal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 20px;
+}
+
+/* Update button styling */
+.name-color-modal .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.name-color-modal .btn-primary {
+    background-color: #34C759;
+    border: none;
+    color: white;
+}
+
+.name-color-modal .btn-primary:hover {
+    background-color: #2FB350;
+}
+
+.name-color-modal .btn-secondary {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+}
+
+.name-color-modal .btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.name-color-modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.name-color-modal .btn-close:hover {
+    opacity: 1;
+}
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+    .name-color-modal {
+        left: 50%;
+    }
+
+    .name-color-modal .modal-content {
+        max-width: 192px;
+        transform: scale(0.6);
+        transform-origin: top center;
+    }
+
+    .name-color-modal .modal-title {
+        font-size: 13px;
+    }
+
+    .name-color-modal .modal-header,
+    .name-color-modal .modal-body,
+    .name-color-modal .modal-footer {
+        padding: 9px 12px;
+    }
+
+    .name-color-modal .form-label {
+        font-size: 8px;
+        margin-bottom: 5px;
+    }
+
+    .name-color-modal .form-control {
+        padding: 5px 7px;
+        font-size: 8px;
+    }
+
+    .name-color-modal .btn {
+        padding: 5px 10px;
+        font-size: 8px;
+    }
+
+    .name-color-modal .color-options div {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Checkbox styling */
+.name-color-modal .checkbox-option {
+    color: white;
+    margin-bottom: 8px;
+}
+
+.name-color-modal .checkbox-option input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #34C759;
+}
+
+/* Button variants */
+.name-color-modal .btn-danger {
+    background-color: #FF3B30;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    color: white;
+}
+
+.name-color-modal .btn-danger:hover {
+    background-color: #FF2D55;
+}
+
+/* Form text styling */
+.name-color-modal .text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-size: 12px;
+}
+
+/* Textarea specific styling */
+.name-color-modal textarea.form-control {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Button group spacing */
+.name-color-modal .mt-3 {
+    margin-top: 1rem !important;
+}
+
+.name-color-modal .ms-2 {
+    margin-left: 0.5rem !important;
+}
+
+/* Select dropdown specific styling */
+.name-color-modal select.form-control option {
+    background-color: rgba(40, 44, 52, 0.95);
+    color: white;
+}
+
+.name-color-modal select.form-control:focus option:checked {
+    background-color: #34C759;
+}

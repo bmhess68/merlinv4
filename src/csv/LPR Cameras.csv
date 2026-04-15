@@ -1,0 +1,380 @@
+point,name,latitude,longitude,color
+point,1st ST E/B @ Vista Pl (Going Into the Mt Vernon from the Bronx),40.907196,-73.848282,yellow
+point,1st ST W/B @ Vista Pl(Going Into Bronx from Mt Vernon),40.907013,-73.848434,yellow
+point,3rd ST E/B @ 14th Ave (Going Into Mt. Vernon),40.904758,-73.844521,yellow
+point,3rd ST E/B @ 2nd Ave (In Mt. Vernon),40.907219,-73.833443,yellow
+point,3rd ST E/B @ Warwick Ave (Going Into Pelham from Mt.Vernon),40.906757,-73.814735,yellow
+point,3rd ST W/B @ 14th Ave (Going Into the Bronx from MV),40.904682,-73.844955,yellow
+point,3rd ST W/B @ 2nd Ave (In Mt. Vernon),40.907219,-73.833191,yellow
+point,3rd ST W/B @ Warwick Ave (Going Into Mt. Vernon),40.906921,-73.815018,yellow
+point,5th Ave  N/B @ Valley Pl (In New Rochelle/Towards Larchmont),40.930424,-73.768616,yellow
+point,5th Ave N/B @ Kingsbridge Rd (In Mt. Vernon),40.892719,-73.830986,yellow
+point,5th Ave S/B @ Kingsbridge Rd (Into the Bronx from Mt. Vernon),40.892586,-73.830917,yellow
+point,5th Ave S/B @ Valley Pl (In New Rochelle/ Towards Flowers Park),40.930405,-73.768684,yellow
+point,5th St @ 8th Ave (In Mt. Vernon) (One Way Street W/B),40.901299,-73.837303,yellow
+point,8th St N/B @ Washington Ave (In New Rochelle/ Toward  Fraser Av),40.90951547,-73.799953,yellow
+point,8th St S/B @ Washington Ave (In New Rochelle/Towards Union Ave),40.90951547,-73.799953,yellow
+point,9A N/B @ Ashford Ave (In Ardsley),41.012051,-73.848145,yellow
+point,9A S/B @ Ashford Ave (In Ardsley),41.011772,-73.848305,yellow
+point,Adams St N/B @ Babbitt Rd (Bedford Hills),41.236749,-73.700168,yellow
+point,Adams St to Babbitt Rd E/B (Bedford Hills),41.236704,-73.700176,yellow
+point,Airport Rd W/B WC Airport,41.073344,-73.70623,yellow
+point,Airport Rd E/B WC Airport,41.073359,-73.706281,yellow
+point,Ardsley Rd E/B @ Central Ave (In Greenburgh),40.993298,-73.820724,yellow
+point,Ardsley Rd W/B @ Central Ave (In Greenburgh),40.99321,-73.820435,yellow
+point,Ashford Ave E/B @ 9A (In Ardsley),41.011726,-73.847046,yellow
+point,Ashford Ave W/B @ 9A (In Ardsley),41.011822,-73.847679,yellow
+point,Bedford Rd E/B @ Marble Ave (In Pleasantville),41.133381,-73.792358,yellow
+point,Bedford Rd W/B @ Marble Ave (In Pleasantville),41.133354,-73.79248,yellow
+point,Boston Post Rd E/B @ Hutch Overpass (In Pelham Manor),40.891926,-73.815849,yellow
+point,Boston Post Rd N/B @ High ST(Going Into Port Chester),40.992989,-73.676178,yellow
+point,Boston Post Rd S/B @ High ST(Going Into Rye from PC) (C&L),40.992828,-73.676384,yellow
+point,Boston Post Rd S/B @ High ST(Going into Rye from PC) (R),40.992886,-73.676346,yellow
+point,Boston Post Rd N/B @ Hornidge Rd(in Rye),40.954995,-73.71522,yellow
+point,Boston Post Rd S/B @ Hornidge Rd(in Rye),40.955008,-73.715252,yellow
+point,Boston Post Rd W/B @ Hutch Overpass (Into Bronx from Pelham Mnr),40.891842,-73.816154,yellow
+point,Broad St E/B @ Fleetwood Ave (In Mt. Vernon),40.926308,-73.837593,yellow
+point,Broad St W/B @ N. Terrace Ave (In Mt. Vernon),40.926533,-73.838188,yellow
+point,Broadway W/B @ Kensico Dam (In Mt. Pleasant),41.070202,-73.768288,yellow
+point,Broadway N/B @ Estherwood Ave (in Dobbs Ferry),41.01522,-73.86978,yellow
+point,Broadway S/B @ Estherwood Ave (in Dobbs Ferry),41.01524,-73.86979,yellow
+point,Bronx River Rd N/B @ McLean Ave (In Yonkers),40.901142,-73.861565,yellow
+point,Bronx River RD N/B @ Wakefield (In Yonkers),40.90638,-73.857788,yellow
+point,Bronx River Rd S/B @ McLean Ave (Going into Bronx from Yonkers),40.900948,-73.861633,yellow
+point,Bronx River RD S/B @ Wakefield (In Yonkers),40.906212,-73.857895,yellow
+point,BRP N/B @ Virginia Rd,41.062492,-73.7742,yellow
+point,BRP N/B @ Yonkers Ave (In Yonkers) (L),40.91399,-73.850273,yellow
+point,BRP N/B @ Yonkers Ave (In Yonkers) (R+C),40.913933,-73.850319,yellow
+point,BRP S/B @ Virginia Rd,41.062286,-73.774307,yellow
+point,BRP S/B @ Yonkers Ave (In Yonkers) (R+C),40.91386,-73.850594,yellow
+point,Bryant Ave E/B @ North St (In White Plains),41.022469,-73.740906,yellow
+point,Bryant Ave W/B @ North St (In White Plains),41.022358,-73.741562,yellow
+point,CCP E/B @ Gramatan Ave (In Mt Vernon),40.92639,-73.83548,yellow
+point,CCP W/B @ Gramatan Ave (In Mt Vernon),40.92659,-73.83548,yellow
+point,Cedar St E/B @ Purchase St (In Rye),40.986408,-73.684006,yellow
+point,Cemetery RD W/B @ Ferris Ave (In White Plains),41.045589,-73.773705,yellow
+point,Central Ave N/B @ Ardsley Rd (In Greenburgh),40.993252,-73.820511,yellow
+point,Central Ave N/B @ Battle Ave (Into White Plains from Greenburgh),41.029053,-73.789772,yellow
+point,Central Ave N/B @ Fort Hill Ave (In Yonkers) (L),40.980305,-73.829979,yellow
+point,Central Ave N/B @ Fort Hill Ave (In Yonkers) (R),40.980034,-73.830284,yellow
+point,Central Ave N/B @ Midland (In Yonkers) (L),40.93483,-73.855827,yellow
+point,Central Ave N/B @ Midland (In Yonkers) (R),40.934811,-73.85585,yellow
+point,Central Ave S/B @ Ardsley Rd (In Greenburgh),40.993248,-73.820686,yellow
+point,Central Ave S/B @ Clark ST (In Yonkers) (L),40.920784,-73.8657,yellow
+point,Central Ave S/B @ Clark ST (In Yonkers) (R),40.920773,-73.865761,yellow
+point,Central Ave S/B @ Fort Hill Ave (In Yonkers) (R),40.979961,-73.830269,yellow
+point,Central Ave S/B @ Midland (In Yonkers) (L),40.934811,-73.856537,yellow
+point,Central Ave S/B @ Midland (In Yonkers) (R),40.934784,-73.856544,yellow
+point,Central Park Ave N/B @ McLean Ave,40.908722,-73.877396,yellow
+point,Central Park Ave S/B @ McLean Ave,40.908813,-73.877884,yellow
+point,Cherry St S/B(Proper) over SMRP,41.237907,-73.701172,yellow
+point,Cliff St N/B Going Towards Elm St (In Yonkers),40.930084,-73.887421,yellow
+point,Columbus Ave N/B @ Lincoln Ave (In Tuckahoe),40.959637,-73.820084,yellow
+point,Columbus Ave S/B @ Lincoln Ave (In Tuckahoe),40.959538,-73.820168,yellow
+point,Cortlandt St N/B @ Clinton St (In Sleepy Hollow),41.080708,-73.864044,yellow
+point,Croton Point Park (Away-Into Park// Towards-Out of Park),41.189213,-73.886414,yellow
+point,Dale Road,40.9688399,-73.81600496,yellow
+point,Dana Rd E/B @ 9A (IFO Police Academy),41.081287,-73.818069,yellow
+point,Division St @ Huguenot St (In New Rochelle)(One Way),40.909397,-73.784088,yellow
+point,Dobbs Ferry Rd E/B @ Verne Pl (In Greenburgh),41.036064,-73.812859,yellow
+point,Dobbs Ferry Rd W/B @ Verne Pl (In Greenburgh),41.036114,-73.812439,yellow
+point,E Post RD EB @ MLK Drive,41.027241,-73.768311,yellow
+point,E.Hartsdale Ave  E/B @ The Hartsdale Train Station(To Fenimore),41.011593,-73.796082,yellow
+point,E.Hartsdale Ave W/B @The Hartsdale Train Station(To Central Ave),41.01186,-73.796028,yellow
+point,E/B on Chelsea St Overpass (In Mt. Pleasant),41.104382,-73.79673,yellow
+point,Eastchester Rd E/B @ Pelhamdale (In New Rochelle/Toward Overman),40.925121,-73.804298,yellow
+point,Eastchester Rd W/B @ Pelhamdale (In New Rochelle),40.925121,-73.804359,yellow
+point,Executive Blvd E/B @ SMRP (In Yonkers) (Left Lane),40.969868,-73.871544,yellow
+point,Executive Blvd E/B @ SMRP (In Yonkers) (Right Lane),40.969822,-73.871559,yellow
+point,Executive Blvd W/B @ Nepperhan Ave (In Yonkers),40.969978,-73.871956,yellow
+point,Farragut Ave N/B @  Merril St (In Hastings)  (Towards Village),40.990509,-73.874138,yellow
+point,Farragut Ave S/B @ Merril St (In Hastings) (Towards SMRP),40.99049,-73.874153,yellow
+point,Ferris Ave S/B @ Cemetery Rd (In White Plains),41.045528,-73.773598,yellow
+point,Fisher Ave E/B @ Columbus Ave (In Tuckahoe /Towards Eastchester),40.958698,-73.82074,yellow
+point,Fleetwood Ave S/B @ Broad St (In Mt. Vernon),40.926262,-73.837746,yellow
+point,Forest Ave N/B @ Playland Pkwy (In Rye),40.965885,-73.680885,yellow
+point,Forest Ave S/B @ Playland Pkwy (In Rye),40.96558,-73.681007,yellow
+point,Getting onto 287 from Bloomingdale Rd (In White Plains) (L),41.031471,-73.757607,yellow
+point,Getting onto 287 from Bloomingdale Rd (In White Plains) (R),41.03149,-73.757591,yellow
+point,Getting onto 95 N/B from Main St (In New Rochelle),40.900475,-73.795059,yellow
+point,Getting onto the BRP S/B from Wakefield (In Yonkers),40.905987,-73.857903,yellow
+point,Getting onto the HRP S/B from Pinebrook Blvd (In New Rochelle),40.969437,-73.776474,yellow
+point,Getting onto the HRP S/B from Westchester Ave E/B (In Harrison),41.013786,-73.720856,yellow
+point,Getting onto the N/B Sprain from Jackson Ave (In Greenburgh),40.9881249,-73.8379833,yellow
+point,Glen Island Park (Driving Away-into park. Towards- Exiting park),40.889519,-73.782875,yellow
+point,Going into Kensico Dam Park (P49),41.070049,-73.767418,yellow
+point,Grand Park Ave N/B @ Griffen Ave (In Scarsdale),40.961117,-73.769073,yellow
+point,Harney Rd EB @ Garth Rd (Eastchester),40.979493,-73.8128,yellow
+point,Harney Rd WB @ Garth Rd (Eastchester),40.97955,-73.812809,yellow
+point,Garth Rd NB from Harney Rd (Eastchester),40.979581,-73.812872,yellow
+point,Harris Rd E/B @ Rt 117 (In Bedford),41.245926,-73.685448,yellow
+point,Heathcote Rd W/B @ Post Rd (In Scarsdale),40.989384,-73.795052,yellow
+point,S Ridge St SB @ High St,40.995454,-73.683786,yellow
+point,S Ridge St NB @ High St,40.99552,-73.683752,yellow
+point,Highland Road W/B @ Purchase St (In Rye),40.986435,-73.684326,yellow
+point,Hillside Ave W/B @ Riverdale Ave (In Port Chester),41.012516,-73.656769,yellow
+point,HRP N/B @ Mamaroneck Rd (In Scarsdale),40.976852,-73.758293,yellow
+point,HRP NB @ Sparks,40.909725,-73.814018,yellow
+point,HRP S/B @ Mamaroneck Rd (In Scarsdale),40.97683,-73.758926,yellow
+point,HRP SB @ Sparks,40.909462,-73.814095,yellow
+point,Huguenot St @ Division St (In New Rochelle)(One Way),40.909428,-73.783989,yellow
+point,I-684 N/B @ Barnes Lane (In Harrison),41.053288,-73.728119,yellow
+point,I-684 S/B @ Barnes Lane (In Harrison),41.053265,-73.728371,yellow
+point,I-684 N/B @ Rt116 (in North Salem),41.326643,-73.657905,yellow
+point,I-684 S/B @ Rt116 (In North Salem,41.326447,-73.65811,yellow
+point,I-95 N/B @ the Central Ave Overpass (In Rye),40.981133,-73.692139,yellow
+point,I-95 N/B @ the Central Ave Overpass (In Rye),40.981171,-73.692032,yellow
+point,I-95 S/B @ the Central Ave Overpass (In Rye),40.981178,-73.692337,yellow
+point,I-95 S/B @ the Central Ave Overpass (In Rye),40.981136,-73.692352,yellow
+point,Independent Way off of 312 - Home Depot (Brewster,41.423378,-73.628555,yellow
+point,Jackson Ave E/B @ Grassy Sprain Rd (In Greenburgh),40.9874444,-73.837006,yellow
+point,Jackson Ave E/B @ Rt 9A (In Greenburgh),40.987701,-73.863182,yellow
+point,Jackson Ave W/B @ Grassy Sprain Rd (In Greenburgh),40.9881038,-73.8383124,yellow
+point,JFK Marina (Front entering Park),40.902988,-73.867882,yellow
+point,King St @ E/B Beechwood Blvd (Going into Port Chester),41.021744,-73.670166,yellow
+point,King St E/B @ N Ridge St(In Rye Brook Going Toward Port Chester),41.037052,-73.675735,yellow
+point,King St W/B @ Beechwood (Going into Rye Brook from Port Chester),41.021851,-73.670151,yellow
+point,King St W/B @ N Ridge St (In Rye Brook Going Towards Airport),41.037159,-73.675819,yellow
+point,Kings Hwy E/B @ Ronalds Ave (Going into New Rochelle),40.902763,-73.797119,yellow
+point,Kings Hwy W/B @ Ronalds Ave (In New Rochelle/towards Pelham),40.902752,-73.797272,yellow
+point,Kisco Ave E/B @ Holiday Inn Drive (In Mt. Kisco into Village),41.218552,-73.725876,yellow
+point,Kisco Ave W/B @ Holiday Inn Drive (In Mt. Kisco Going To SMRP),41.218857,-73.726006,yellow
+point,Knollwood Rd N/B @ Grasslands Rd (In Greenburgh),41.071663,-73.799728,yellow
+point,Knollwood Rd S/B @ Grasslands Rd (In Greenburgh),41.071533,-73.799728,yellow
+point,Lake St N/B @ Delfino Park (towards W Harrison) (White Plains),41.0403138,-73.75547,yellow
+point,Lake St S/B @ Delfino Park (White Plains),41.0402,-73.75562,yellow
+point,Lawerence St E/B at Bruce Ave (In Yonkers),40.915878,-73.895508,yellow
+point,Leewood Drive,40.9688399,-73.81600496,yellow
+point,Lexington Ave S/B @ Gatto Dr (In Mt. Kisco),41.20393,-73.730385,yellow
+point,Lincoln Ave E/B @ 1st Ave (Going Into Pelham from Mt. Vernon),40.916153,-73.811035,yellow
+point,Lincoln Ave E/B at Oakdale Ave (Going into New Rochelle),40.915123,-73.801414,yellow
+point,Lincoln Ave W/B @ 1st Ave (Going Into Mt. Vernon from Pelham),40.916222,-73.811272,yellow
+point,Lincoln Ave W/B @ Oakdale (In New Rochelle/towards Pelham),40.915119,-73.80143,yellow
+point,Main St @ Harrison St (In New Rochelle)(One Way),40.911263,-73.777885,yellow
+point,Main St E/B @ 95 (In New Rochelle),40.900173,-73.795158,yellow
+point,Main ST E/B @ Emerson (In New Rochelle/Towards Larchmont),40.919502,-73.766022,yellow
+point,Main St W/B @ 95 (Going Into Pelham Manor from New Rochelle),40.900345,-73.795326,yellow
+point,Main St W/B @ Cooper Dr. (Going into New Rochelle),40.92054,-73.764748,yellow
+point,Main St WB @ Marbledale Rd (In Tuckahoe),40.94907,-73.822426,yellow
+point,Mamaroneck Ave NB @ Soundview Ave (Mamaroneck),40.964817,-73.735412,yellow
+point,Mamaroneck Ave SB @ Soundview Ave (Mamaroneck),40.964811,-73.735561,yellow
+point,Mamaroneck Ave E/B @ Saxon Woods Pool (In White Plains),40.986687,-73.744675,yellow
+point,Mamaroneck Ave W/B @ Saxon Woods Pool (In White Plains / To HRP),40.986557,-73.744881,yellow
+point,Mamaroneck Ave N/B @ N Barry Ave (In V/Mamaroneck),40.960334,-73.73687,yellow
+point,Mamaroneck Ave S/B @ N Barry Ave (In V/Mamaroneck),40.960183,-73.737022,yellow
+point,Mamaroneck Rd W/B @ the HRP (In Scarsdale),40.977291,-73.759125,yellow
+point,Maple Ave N/B @ Rt133,41.209484,-73.729637,yellow
+point,Marble Ave N/B @ MTA Bridge (In Mt. Pleasant),41.124306,-73.782761,yellow
+point,Marbledale Rd N/B @ Main St (In Tuckahoe),40.949104,-73.822388,yellow
+point,McLean Ave E/B @ Bronx River Rd (Going into Bronx from Yonkers),40.901112,-73.861748,yellow
+point,McLean Ave E/B @ Central Park Ave,40.908669,-73.877304,yellow
+point,McLean Ave W/B @ Bronx River Rd (In Yonkers),40.901009,-73.861504,yellow
+point,McLean Ave W/B @ Central Park Ave,40.908821,-73.87796,yellow
+point,Memorial Hwy E/B @ Burling Ln (In New Rochelle/ Towards 95),40.912884,-73.786575,yellow
+point,Midland Ave N/B @ The Home Depot (In Port Chester),40.990185,-73.670464,yellow
+point,Midland Ave S/B @ Peck Ave (In Rye),40.9855,-73.674149,yellow
+point,Midland Ave S/B @ The Home Depot (In Port Chester),40.989433,-73.671021,yellow
+point,Midland N/B @ Peck Ave (In Rye Going Towards Port Chester),40.985504,-73.674171,yellow
+point,Milltown Rd EB @ Paddock Farm Rd (Brewster-Putnam),41.411974,-73.56893,yellow
+point,Mill Rd E/B @ California Rd (In Eastchester)(Towards HRP),40.955399,-73.802193,yellow
+point,Mill Rd W/B @ California Rd (In Eastchester),40.955399,-73.80217,yellow
+point,MLK Drive NB @ E Post Rd,41.027233,-73.768288,yellow
+point,Mt. Vernon Ave E/B @ MacQuesten Pkwy (Going Into Mt. Vernon),40.912868,-73.8489,yellow
+point,Mt. Vernon Ave W/B @ MacQuesten Pkwy(Going Into Yonkers from MV),40.913105,-73.84938,yellow
+point,Municipal Pl @ S. Riverside Ave N/B,41.202174,-73.887206,yellow
+point,Municipal Pl @ S. Riverside Ave S/B,41.202048,-73.887094,yellow
+point,Municipal Pl E/B @ S. Riverside Ave,41.202164,-73.887011,yellow
+point,Municipal Pl W/B @ S. Riverside Ave,41.202065,-73.887251,yellow
+point,N. Broadway N/B @ Bond St (In White Plains),41.052246,-73.770103,yellow
+point,N. Broadway S/B @ Bond St (In White Plains),41.052204,-73.770081,yellow
+point,N Broadway N/B @ Dudley St (Hastings),40.977772,-73.880415,yellow
+point,N Broadway S/B @ Dudley St (Hastings),40.977634,-73.880453,yellow
+point,N.Main St N/B @ Putnam Ave (Going into Greenwich from PC),41.012085,-73.655472,yellow
+point,N.Main St N/B @ Putnam Ave (Going Into Greenwich from PC) L,41.01207,-73.655487,yellow
+point,N.Main St S/B @ Putnam Ave (In Port Chester),41.011444,-73.655853,yellow
+point,N/B 727 Bronx River Road (In Yonkers),40.924442,-73.845329,yellow
+point,Neperan Rd E/B @ The Pump House (In Tarrytown) (Towards SMRP),41.084068,-73.84153,yellow
+point,Neperan Rd W/B @ The Pump House (In Tarrytown) (Towards Village),41.084007,-73.842064,yellow
+point,Nepperhan Ave N/B @ Executive Blvd (In Yonkers),40.970074,-73.871719,yellow
+point,Nepperhan Ave S/B @ Executive Blvd (In Yonkers),40.969746,-73.871788,yellow
+point,North Ave N/B @ Lovell Rd (In New Rochelle/Towards the Hutch),40.94949,-73.796219,yellow
+point,North Ave N/B @ Wilmot Rd (In New Rochelle),40.953674,-73.796616,yellow
+point,North Ave S/B @ Lovell Rd (In New Rochelle/Towards Quaker Ridge),40.949505,-73.796204,yellow
+point,North Ave S/B @ Northfield Rd (In New Rochelle),40.946629,-73.795609,yellow
+point,North Ave S/B @ Wilmot Rd (In New Rochelle/Towards the Hutch),40.953625,-73.796638,yellow
+point,North Ridge St S/B @ King St (In Rye Brook),41.036449,-73.676193,yellow
+point,North St S/B @ Bryant Ave (In White Plains),41.022392,-73.741043,yellow
+point,North St W/B @ Theodore Fremd Ave(Going Into Harrison from Rye),40.977425,-73.695396,yellow
+point,Old White Plains Rd N/B @ Pelham St (by 95) (In V/Mamaroneck),40.956609,-73.741295,yellow
+point,Oak St W/B @  North West St (Going into Yonkers from Mt. Vernon),40.914703,-73.848137,yellow
+point,Ogden Rd E/B @ the BRP (In Scarsdale),40.996914,-73.803741,yellow
+point,Oregon Rd E/B @ School St (In Cortlandt),41.329887,-73.880249,yellow
+point,Palmer Ave E/B @ Spencer Dr (In New Rochelle/Towards Larchmont),40.926975,-73.766518,yellow
+point,Palmer Ave W/B @ Spencer Dr (Going into New Rochelle),40.926979,-73.766495,yellow
+point,Parking Booth (Driving Away-Leaving Park// Toward-Entering Park),40.926193,-73.8759,yellow
+point,Payne St E/B @ Rt 9A (In Greenburgh),41.06192,-73.814636,yellow
+point,Peekskill Hollow Rd EB @ Mill St (Putnam),41.353541,-73.839796,yellow
+point,Peekskill Hollow Rd WB @ Mill St (Putnam),41.35358,-73.839847,yellow
+point,Mill St SB @ Peekskill Hollow Rd (Putnam),41.353463,-73.839833,yellow
+point,Pelham Rd W/B @ Pelhamdale Ave (Into Bronx from New Rochelle),40.887825,-73.790382,yellow
+point,Playland PKWY E/B @ Forest Ave (Going Into Park),40.965652,-73.680885,yellow
+point,Playland PKWY W/B @ Forest Ave (In Rye),40.965706,-73.681091,yellow
+point,Pleasantville Rd N/B @ North State Rd (In Brarcliff),41.150772,-73.830864,yellow
+point,Pleasantville Rd S/B @ North State Rd (In Briarcliff),41.150684,-73.830772,yellow
+point,Pleasantville Rd E/B @ Taconic (Larch Rd) (In Briarcliff),41.145038,-73.817212,yellow
+point,Pleasantville Rd W/B @ Taconic (Larch Rd) (In Briarcliff),41.145048,-73.817333,yellow
+point,Purchase St N/B @ Cedar St (In Rye),40.98653,-73.68409,yellow
+point,Purchase St S/B @ Cedar St (In Rye),40.986301,-73.684212,yellow
+point,Quaker Ridge Rd E/B @ North Ave (In New Rochelle),40.947395,-73.795944,yellow
+point,Ravensdale Rd W/B @ Rt 9A (In Greenburgh),40.98769,-73.863365,yellow
+point,Ridge Hill Blvd / 87 NB Service Rd (from Ridge Hill towards Stew Leonards Dr) (Yonkers),40.967096,-73.860402,yellow
+point,Ridge Hill Blvd / Ridge Hill Blvd EB (entering Ridge Hill from i87) (Yonkers),40.966861,-73.859888,yellow
+point,Ridge Hill Blvd / 87 SB Entrance Ramp from Ridge Hill Blvd (Yonkers),40.966852,-73.861275,yellow
+point,Ridge Rd E/B @ Ridge Rd Park (In Greenburgh),41.020452,-73.813126,yellow
+point,Ridge Rd N/B into Ridge Rd Park (In Greenburgh),41.020514,-73.813199,yellow
+point,River Rd N/B @ Palmer Ave (In New Rochelle/Towards I95),40.915943,-73.780014,yellow
+point,Riverdale Ave N/B @ the Cityline (Going into Yonkers),40.914436,-73.902168,yellow
+point,Riverdale Ave S/B @ the Cityline (Going into Bronx from Yonkers),40.914036,-73.902237,yellow
+point,Route 6 E/B @ the Taconic (In Yorktown),41.332565,-73.815231,yellow
+point,Route 6 W/B @ the Taconic (In Yorktown),41.33268,-73.816154,yellow
+point,Route 9 N/B @ Bay St (In Peekskill),41.281887,-73.929855,yellow
+point,Route 9 NB @ Phelps (In Sleepy Hollow),41.107227,-73.859741,yellow
+point,Route 9 S/B @ Bay St (In Peekskill),41.282108,-73.929726,yellow
+point,Route 9 S/B @ Phelps (In Sleepy Hollow),41.107105,-73.859863,yellow
+point,Route 52 N/B @ Horsepound Rd (In Kent-Putnam County),41.4398687,-73.6814182,yellow
+point,Route 52 S/B @ Horsepound Rd (In Kent-Putnam County),41.439277,-73.681843,yellow
+point,Rt 117 E/B @ Beech Hill RD (In Mt. Pleasant),41.122082,-73.814903,yellow
+point,Rt 117 N/B @ Harris Rd (In Bedford),41.24604,-73.685471,yellow
+point,RT 117 N/B @ Preston Way (In Mt. Kisco),41.214882,-73.72007,yellow
+point,Rt 117 S/B @ Harris Rd (In Bedford),41.245945,-73.685623,yellow
+point,Rt 117 (Main St) @Lexington (in Mt Kisco),41.189481,-73.731843,yellow
+point,RT 117 S/B @ Preston Way (In Mt. Kisco),41.214157,-73.720428,yellow
+point,Rt 117 W/B @ Pace (In Mt. Pleasant),41.12624,-73.804199,yellow
+point,Rt 117 W/B @ Raven Way (In Mt. Pleasant),41.123375,-73.81218,yellow
+point,Rt 133 E/B @ Manchester Dr (In Mt. Kisco),41.209366,-73.731705,yellow
+point,Rt 133 W/B @ Manchester Dr (In Mt. Kisco),41.209496,-73.731049,yellow
+point,RT 172 E/B @ Leonard Park (In Mt. Kisco),41.196739,-73.720825,yellow
+point,RT 172 W/B @ Leonard Park (In Mt. Kisco),41.196671,-73.72126,yellow
+point,Rt 202 E/B @ Mohansic Ave (In Yorktown),41.291534,-73.822906,yellow
+point,Rt 202 W/B @ Mohansic Ave (In Yorktown),41.291603,-73.822906,yellow
+point,Rt 22  S/B @ Pondfield Rd (In Bronxville),40.934715,-73.819061,yellow
+point,Rt 22 N/B @ Church St (In North Castle),41.056404,-73.765991,yellow
+point,RT 22 N/B @ Fenimore Rd (In Scarsdale),41.004757,-73.784607,yellow
+point,Rt 22 N/B @ Hillside Pl (In Eastchester),40.954502,-73.814545,yellow
+point,RT 22 N/B @ Lake Isle (In Eastchester),40.967648,-73.80825,yellow
+point,Rt 22 S/B @ Church St (In North Castle),41.056393,-73.766029,yellow
+point,RT 22 S/B @ Fenimore Rd (In Scarsdale),41.004719,-73.784698,yellow
+point,Rt 22 S/B @ Hillside Pl (In Eastchester),40.954464,-73.814575,yellow
+point,RT 22 S/B @ Lake Isle (In Eastchester),40.967609,-73.808327,yellow
+point,RT 22 S/B @ Rt 116 (In North Salem),41.327442,-73.655693,yellow
+point,RT 301 E/B @ Peekskill Rd (In Cold Spring- Putnam County),41.4250683,-73.9452672,yellow
+point,RT 301 W/B @ Peekskill Rd (In Cold Spring- Putnam County),41.4247819,-73.9460655,yellow
+point,RT 301 E/B @ Farmer's Mill Rd (In Kent-Putnam County),41.4830059,-73.769434,yellow
+point,RT 301 W/B @ Farmer's Mill Rd (In Kent-Putnam County),41.4831452,-73.7697501,yellow
+point,Rt 35 E/B @ Rt 121 (In Lewisboro),41.268688,-73.605072,yellow
+point,Rt 35 W/B @ Rt 121 (In Lewisboro),41.268662,-73.605156,yellow
+point,Rt 52 N/B @ Rt 6 (In Carmel Going Towards the Courthouse),41.4224114, -73.6000,yellow
+point,Rt 52 N/B @ Ludingtonville Rd (In Kent- Putnam County),41.50825,-73.683932,yellow
+point,Rt 52 S/B @ Ludingtonville Rd (In Kent- Putnam County),41.508051,-73.683954,yellow
+point,Ludingtonville Rd E/B from Rt 52 towards 84 (In Kent- Putnam County),41.508155,-73.683666,yellow
+point,Rt 6 E/B @ the Mahopac Village Center (In Carmel),41.348415,-73.755859,yellow
+point,RT 6 E/B @ Westbrook Dr (In Cortlandt),41.30764,-73.876076,yellow
+point,Rt 6 W/B @ the Mahopac Village Center (In Carmel // Into Somers),41.348419,-73.7544857,yellow
+point,RT 6 W/B @ Westbrook Dr (In Cortlandt),41.307217,-73.876503,yellow
+point,RT 6N E/B @ Secor Rd (In Carmel),41.366051,-73.770966,yellow
+point,RT 6N W/B @ Secor Rd (In Carmel going towards Yorktown)),41.36589,-73.771164,yellow
+point,RT 9 N/B @ Cedar Lane (In Ossining),41.170021,-73.864204,yellow
+point,Rt 9 N/B @ the Putnam County Line (Going into Putnam),41.319183,-73.930214,yellow
+point,Rt 9 N/B @ Wildey Street (Going into Sleepy Hollow),41.080132,-73.857719,yellow
+point,Rt 9 S/B  @ Wildey Street (Going into Tarrytown),41.080021,-73.857735,yellow
+point,RT 9 S/B @ Cedar Lane (In Ossining),41.169327,-73.863838,yellow
+point,Rt 9 SB @ the Putnam County Line (Going into Westchester),41.319229,-73.930191,yellow
+point,Rt 9A N/B @ Dana Rd (In Mt. Pleasant),41.081509,-73.818489,yellow
+point,Rt 9A N/B @ Jackson Ave (In Greenburgh),40.987736,-73.863243,yellow
+point,Rt 9A N/B @ North State Rd (In Briarcliff),41.151516,-73.830284,yellow
+point,Rt 9A N/B @ Payne St (In Greenburgh),41.062,-73.814789,yellow
+point,Rt 9A S/B @ Dana Rd (In Mt. Pleasant),41.081181,-73.818451,yellow
+point,Rt 9A S/B @ Jackson Ave (In Greenburgh),40.987644,-73.863289,yellow
+point,Rt 9A S/B @ North State Rd (In Briarcliff),41.151398,-73.830246,yellow
+point,Rt 9D N/B @ Fair St (In Cold Spring- Putnam),41.4264674,-73.9654229,yellow
+point,Rt 9D SB @ Belle Lane,41.4143299,-73.9381271,yellow
+point,Rt 9D S/B @ Fair St (In Cold Spring- Putnam),41.4261747,-73.9650309,yellow
+point,S. Broadway N/B @ Caryl Ave (In Yonkers),40.911694,-73.896652,yellow
+point,S. Broadway S/B @ Caryl Ave (Going into Bronx from Yonkers),40.911797,-73.896652,yellow
+point,S. Lexington  Ave S/B @ Quarropas ST (In White Plains),41.028114,-73.771713,yellow
+point,S.Broadway S/B @ Hudson St (In Yonkers),40.933151,-73.898666,yellow
+point,S/B 727 Bronx River Road (In Yonkers),40.924458,-73.845314,yellow
+point,Secor Rd N/B @  Sycamore Rd (In Scarsdale/ Towards White Plains),40.992767,-73.764801,yellow
+point,Secor Road N/B @ RT 6N- Going towards the Taconic (In Carmel),41.366009,-73.771103,yellow
+point,SMRP N/B @ Cherry St,41.237793,-73.701042,yellow
+point,SMRP S/B @ Cherry St,41.237782,-73.70134,yellow
+point,South Columbus Ave N/B @ Elliot St (In Mt. Vernon),40.905235,-73.820969,yellow
+point,Sprain Rd @ Austin Ave N/B (Yonkers),40.976899,-73.858503,yellow
+point,Sprain Rd @ Austin Ave S/B (Yonkers),40.97685,-73.858597,yellow
+point,Spruce St E/B  Going Towards Rumsey RD (In Yonkers),40.929958,-73.887436,yellow
+point,Theodore Fremd Ave S/B @ North St (In Rye),40.977295,-73.695244,yellow
+point,Tompkins Ave E/B @ Marianna Dr (Into Yonkers from Hastings),40.979229,-73.872368,yellow
+point,TSP N/B @ Chelsea St (In Mt. Pleasant) (L),41.104557,-73.79673,yellow
+point,TSP N/B @ Chelsea St (In Mt. Pleasant) (R),41.104656,-73.796722,yellow
+point,TSP S/B @ Chelsea St (In Mt. Pleasant)  (L),41.104206,-73.796776,yellow
+point,TSP S/B @ Chelsea St (In Mt. Pleasant) (R),41.104111,-73.796722,yellow
+point,Tuckahoe Rd E/B @ Garrett Ave (Going into Tuckahoe from Yonkers),40.949619,-73.834137,yellow
+point,Tuckahoe Rd W/B @ Garrett Ave (Going into Yonkers from Tuckahoe),40.94957,-73.834007,yellow
+point,Turning onto Ashburton Ave from Yonkers Ave (In Yonkers) (R),40.935112,-73.880539,yellow
+point,Turning onto Rumsey Rd from Yonkers Ave (In Yonkers) (R),40.934761,-73.879776,yellow
+point,Union Ave N/B @ Harrison HS (In Harrison),40.98027,-73.737259,yellow
+point,Union Ave S/B @ Harrison HS (In Harrison),40.980289,-73.737236,yellow
+point,Wakefield Ave E/B @ Bronx River Rd (Into the Bronx from Yonkers),40.906231,-73.85643,yellow
+point,Wakefield W/B @ Bronx River Rd (Going Into Yonkers from Bronx),40.90638,-73.857048,yellow
+point,Warburton Ave N/B Going Into Hastings From Yonkers,40.976303,-73.886932,yellow
+point,Warburton Ave S/B  Going Into Yonkers From Hastings,40.976585,-73.887032,yellow
+point,Washington Ave E/B @ 8th St (Going Into New Rochelle),40.90951547,-73.799953,yellow
+point,Washington Ave W/B @ 8th St (In New Rochelle/Towards Pelham),40.90951547,-73.799953,yellow
+point,Weaver St N/B @ Hutchinson Av (In New Rochelle/ Towards the HRP),40.968769,-73.773956,yellow
+point,Weaver St N/B @ Scarsdale Corners (New Rochelle/toward Wilmot) 1,40.979916,-73.776299,yellow
+point,Weaver St S/B @ Hutchinson Ave (In New Rochelle),40.9688,-73.773979,yellow
+point,Weaver St S/B @ Scarsdale Corners (In New Rochelle/To Stratton)1,40.979916,-73.776299,yellow
+point,Webster Ave N/B @ Startford (In New Rochelle/Towards the Hutch),40.942696,-73.800156,yellow
+point,Webster Ave S/B @ Stratford (Going into New Rochelle),40.942577,-73.800041,yellow
+point,Westchester Ave W/B @ Lincoln Ave (in Rye Brook),41.00847,-73.69074,yellow
+point,Westchester Ave E/B @ Lincoln Ave (in Rye Brook),41.00826,-73.690278,yellow
+point,Westchester Ave E/B @ Bowman Ave (In Port Chester),41.004757,-73.677681,yellow
+point,Westchester Ave E/B @ the HRP (In Harrison),41.013958,-73.720634,yellow
+point,Westchester Ave W/B @ Bowman Ave (Going Towards Rye Brook),41.004833,-73.677246,yellow
+point,Westchester Ave W/B @ Westchester Park  Dr (In Harrison) L,41.02113,-73.727058,yellow
+point,Westchester Ave W/B @ Westchester Park  Dr (In Harrison) R,41.021194,-73.727005,yellow
+point,Wilmot Rd N/B @ Hanson Ln. (In New Rochelle/Towards the Hutch),40.958302,-73.795082,yellow
+point,Wilmot Rd N/B @ Stratton (In New Rochelle/Towards Eastchester),40.96459828,-73.79596275,yellow
+point,Wilmot Rd S/B @ Hanson Ln. (In New Rochelle/Towards Fenimore),40.958099,-73.795052,yellow
+point,Wilmot Rd S/B @ Stratton (In New Rochelle/Towards the Hutch),40.96459828,-73.79596275,yellow
+point,Winter Hill Rd S/B @ Main St (In Tuckahoe),40.948998,-73.822304,yellow
+point,Yonkers Ave E/B @ Ashburton Ave (In Yonkers) (L),40.935043,-73.880684,yellow
+point,Yonkers Ave E/B @ Trenchard St (In Yonkers),40.918865,-73.86026,yellow
+point,Yonkers Ave W/B @ Trenchard St (In Yonkers),40.918953,-73.860344,yellow
+point,Yonkers Ave W/B at Ashburton Ave (In Yonkers) (L),40.935074,-73.88073,yellow
+point,Pole 8 Merritt Parkway @ W Rocks Rd,41.14543,-73.4176,yellow
+point,Rt 9 N/B @ The Dutchess County Line (Going into Dutchess Co),41.490583,-73.902951,yellow
+point,Rt 9 S/B @ The Dutchess County Line (Going into Dutchess Co),41.490583,-73.902951,yellow
+point,Ramada Yonkers (Facing south on Patmor Ave),40.95593245,-73.86523013,yellow
+point,Croton-South Riverside / Riverside Ave N/B @ Croton Point Ave (In Croton),41.1943563,-73.8802726,yellow
+point,Croton-South Riverside / Riverside Ave S/B @ Croton Point Ave (In Croton),41.1942678,-73.880528,yellow
+point,CrotonPoint Ave W/B @ Riverside Ave (in Croton),41.1942373,-73.8802001,yellow
+point,Rt 311 NB @ Ludington Court,41.4716929,-73.654698,yellow
+point,Rt 311 SB @ Ludington Court,41.4714085,-73.6552056,yellow
+point,Rt 35 @ Triangle Shopping Center (In Yorktown),41.27797782,-73.78258948,yellow
+point,Main St (Rt128) @ Maple Ave N/B (In North Castle),41.12671817,-73.713836,yellow
+point,Main St (Rt128) @ Maple Ave S/B (In North Castle),41.12657674,-73.71389903,yellow
+point,Rt 22 NB @ Southeast Courthouse (In Southeast),41.4115199,-73.5777951,yellow
+point,Rt 22 NB @ Putnam-Dutchess Border (In Patterson),41.5247716,-73.588223,yellow
+point,Palmer Ave SB @ Depot Way E (in Larchmont),40.9352311,-73.7553426,yellow
+point,Rt 22 SB @ Putnam-Dutchess Border (In Patterson),41.5246335,-73.5883606,yellow
+point,Farmer's Mills NB @ RT 301,41.4832055,-73.7694548,yellow
+point,RT 9D NB @ Belle Ln,41.414825,-73.9382469,yellow
+point,Doansburg Rd WB @ Mt Ebo Rd,41.436195,-73.5700575,yellow
+point,Doansburg Rd EB @ Mt Ebo Rd North (Away from 22),41.4362836,-73.5697785,yellow
+point,Boston Post Rd SB @ Nassau Rd,40.9321568,-73.7492904,yellow
+point,Boston Post Rd NB @ Nassau Rd,40.9323189,-73.749167,yellow
+point,Palmer Ave NB @ Depot Way E,40.9353261,-73.7551324,yellow
+point,Chatsworth Ave EB @ i95 Bridge,40.933344,-73.7600635,yellow
+point,Chatsworth Ave WB @ i95 Bridge,40.933494,-73.760262,yellow
+point,Rt 22 SB @ Southeast Courthouse,41.4114141,-73.5779037,yellow

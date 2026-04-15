@@ -1,0 +1,1291 @@
+.button-container .left-button, .button-container .right-button {
+  background-color: #333 !important;  /* Dark gray color, with !important to override any other styles */
+  color: white !important;
+  writing-mode: vertical-lr; /* Makes text vertical */
+  text-align: center; /* Center text for better alignment */
+  transform: rotate(180deg); /* Rotate text to be readable from bottom to top */
+  width: 50px; /* Increase width by 25% */
+  height: 150px; /* Increase height by 50% */
+  padding: 0; /* Remove padding */
+  border: none; /* Remove borders */
+  box-shadow: none; /* Remove box shadows if any */
+}
+
+svg {
+  margin-right: 5px;  /* Example to add spacing between the icon and text */
+}
+
+.button-container {
+  position: absolute;
+  top: 50%; /* Center vertically */
+  width: 100%; /* Ensure the container spans the full width of the viewport */
+  transform: translateY(-50%); /* Offset the height of the container */
+  z-index: 2000; /* Make sure it's above other content */
+}
+
+.small-new, .small-close, .small-edit {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  background: #333;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font: uppercase;
+}
+
+.small-close {
+  color: #dc3545;
+  font: bold;
+}
+
+.small-edit {
+  color: yellow;
+}
+
+.small-new:hover, .small-close:hover, .small-edit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  background-color: #444;
+}
+
+.small-new:active, .small-close:active, .small-edit:active {
+  transform: translateY(1px);
+  background-color: #222;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@keyframes scroll-left {
+  from {
+      transform: translateX(100%);
+  }
+  to {
+      transform: translateX(-200%); /* Moves the full width of the element from right to left */
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.leaflet-top.leaflet-right {
+  top: 35%;
+  left: 2%;
+  right: unset;
+  z-index: 2000;
+}
+
+.leaflet-control-zoom {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+.overlay-top {
+  position: fixed;
+  top: 0;
+  left: 10%;
+  width: 90%;
+  height: 10%;
+  background-color: rgba(0, 0, 0, 0.0);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: black;
+  z-index: 500; /* Above main content but below modals/popups */
+}
+
+.selected-incident-info {
+  text-align: left;
+  padding: 10px;
+}
+
+.selected-incident-info p {
+  margin: 0 10px;
+  display: inline-block;
+}
+
+.overlay-left {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: auto; /* Adjust width to fit content */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column; /* Align items vertically */
+  align-items: center;
+  justify-content: flex-start; /* Align items to the top */
+  padding: 5px;
+  z-index: 500;
+}
+
+.toolbar-button {
+  background: whitesmoke;
+  border: 1px solid black;
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  transition: transform 0.2s;
+  width: 50px; /* Ensure same width */
+  height: auto; /* Adjust height as needed */
+  margin-left: 10px; /* Distance from left border */
+}
+
+.toolbar-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.toolbar-button:hover img {
+  filter: brightness(1.2);
+}
+
+.leaflet-control-zoom {
+  position: fixed;
+  top: 10%; /* Adjust based on overlay height */
+  left: 0; /* Ensures it does not overlap with anything on the left */
+  z-index: 3000; /* Above overlays */
+}
+
+.overlay-right {
+  position: fixed;
+  top: 10%;  /* Align with the top of the left overlay */
+  right: 1%; /* Positioned on the right side */
+  width: 10%;  /* Consistent with the left overlay width */
+  height: 75%; /* Full height adjusted for top overlay */
+  background-color: rgba(0, 0, 0, 0.0); /* Semi-transparent black, lighter than left */
+  display: flex;
+  flex-direction: column; /* Vertical alignment of any children */
+  align-items: center;
+  justify-content: center; /* Center content vertically and horizontally */
+  padding: 2px;
+  z-index: 1050; /* Same layering as the left overlay */
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+.overlay-right-no-inc {
+  z-index: 100;
+}
+
+/* App.css */
+
+.form-container {
+  position: absolute;
+  left: 20%;
+  top: 20%;
+  z-index: 1000;
+  background: linear-gradient(135deg, #2c2c2c 0%, #1b1b1b 100%);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 30%;
+}
+
+.form-container h2 {
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-container label {
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.form-container input, .form-container select, .form-container textarea {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 16px;
+  background: #333;
+  color: #fff;
+}
+
+.form-container button[type="submit"], .form-container button[type="button"] {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.form-container button[type="submit"] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.form-container button[type="button"] {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.form-container button[type="submit"]:hover, .form-container button[type="button"]:hover {
+  opacity: 0.8;
+}
+
+.modal-body {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #eef1ef;
+  background-color: #1b1b1b;
+}
+.modal-footer {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #eef1ef;
+  background-color: hsla(0, 0%, 6%, .493);
+}
+
+.modal-dialog {
+  width: 100%;
+  margin: 5px 0;
+  background-color: #333;
+  color: #fff;
+}
+
+.incident-modal {
+  width: 100%;
+  margin: 5px 0;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.incident-modal-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.incident-modal-body {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.modal-header{
+  background-color: rgba(16, 16, 16, 0.493);
+  color: white;
+  font-weight: bold;
+}
+
+.modal-content{
+  background-color:unset;
+}
+
+.modal-success {
+  width: 80%; 
+  max-width: 600px; 
+  background-color: #333;
+  color: #f30707;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%); 
+  z-index: 1050; 
+}
+
+.modal-success-header {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.modal-success-body {
+  font-size: 0.9rem;
+  line-height: 1.4;
+} 
+
+.modal-body {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #eef1ef;
+  background-color: rgba(0, 0, 0, 0.5)
+}
+
+.modal-dialog {
+  width: 100%;
+  margin: 5px 0;
+  background-color: #333;
+  color: #fff;
+}
+
+
+.modal-backdrop {
+  display: none; /* Hide the backdrop to allow interactions with the map */
+}
+
+.modal {
+  pointer-events: none; /* Allow clicks to pass through the modal background */
+  right: 30%; /* Adjust this value to move the modal away from the toolbar */
+  width: 30%;
+  background-color: transparent;
+}
+
+.modal-dialog {
+  position: fixed;
+  top: 3%;
+  right: 30%; /* Ensure this matches the .modal left value */
+  margin: 1px;
+  width: 30%;
+  height: 75%;
+  pointer-events: auto;
+  display: block;
+  background-color: transparent;
+  z-index: 3000;
+}
+
+.modal-dialog-centered {
+  display: block !important;
+  margin: 0;
+}
+
+.modal-body {
+  opacity: 1;
+  color: white;
+}
+
+.rotated-icon {
+  position: absolute;
+  transform-origin: center;
+}
+
+.rotated-icon img {
+  transition: transform 0.2s ease-in-out;
+  transform-origin: center center;
+}
+
+.custom-tooltip.leaflet-tooltip {
+  background-color: rgba(0, 0, 255, 0.70) !important; /* Blue with high opacity */
+  color: white !important; /* White text for better visibility */
+  border-radius: 8px !important; /* Rounded corners */
+  padding: 2px 5px !important; /* Padding for better appearance */
+  border: none !important; /* Remove default border */
+  box-shadow: none !important; /* Remove default shadow */
+  font-size: 11px !important; /* Adjust font size if necessary */
+}
+
+.vehicle-search-container {
+  position: absolute;
+  top: 10px;
+  left: 100px;
+  width: 200px;
+  background-color: yellow; /* For debugging */
+  z-index: 1500; /* Ensure it appears above the map */
+}
+
+.vehicle-search-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.vehicle-search-results {
+  position: absolute;
+  width: 100%;
+  margin-top: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: white;
+  z-index: 1501; /* Ensure it appears above other elements */
+}
+
+.vehicle-search-results li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.vehicle-search-results li:hover {
+  background-color: #f0f0f0;
+}
+.csv-marker-tooltip {
+  font-size: 10px; /* Set the font size */
+  color: #ffffff; /* Set the text color */
+  background-color: #08b427!important; /* Set the background color */
+  padding: none; /* Adjust padding if necessary */
+  border-radius: 2px; /* Optional: rounding the corners */
+  font-weight: 100; /* Optional: making the text bold */
+}
+
+
+.leaflet-tooltip {
+  background-color: white !important;
+  border: 1px solid black !important;
+  padding: 2px !important;
+  font-size: 10px !important;
+  border-radius: 8px;
+  color: black !important;
+  }
+
+.special-tooltip {
+  background-color: rgba(41, 117, 247, 0.9)!important; /* Dark gray with high opacity */
+  color: white!important; /* White text for better visibility */
+  border-radius: 8px!important; /* Rounded corners */
+  padding: 2px 5px!important;  /* Padding for better appearance */
+  border: none!important; /* Remove default border */
+  box-shadow: none!important; /* Remove default shadow */
+  font-size: 12px!important; /* Adjust font size if necessary */
+}
+
+.toolbar-button {
+  background: whitesmoke;
+  border: 1px solid black;
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  transition: transform 0.2s;
+  width: 50px; /* Ensure same width */
+  height: auto; /* Adjust height as needed */
+  margin-left: 10px; /* Distance from left border */
+}
+
+.toolbar-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.toolbar-button:hover img {
+  filter: brightness(1.2);
+}
+
+.leaflet-touch .leaflet-control-zoom-display {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+  line-height: 30px;
+}
+
+.leaflet-touch .leaflet-bar a, .leaflet-touch .leaflet-toolbar-0 > li > a {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+  line-height: 45px;
+  background-size: 314px 30px;
+}
+
+.leaflet-touch .leaflet-draw-toolbar.leaflet-bar a {
+  background-position-y: 6px;
+}
+
+.leaflet-touch .leaflet-draw-actions a, .leaflet-touch .leaflet-toolbar-1 {
+  left: 45px;
+}
+
+/* Hide the remove button in the leaflet-draw toolbar */
+.leaflet-draw-edit-remove {
+  display: none !important;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  
+  }
+.logo-box{
+  position: fixed;
+  right: 1px;
+  bottom: 1px;
+  z-index: 1200;
+}
+
+.leaflet-draw-toolbar {
+  display: none !important;
+}
+
+.custom-draw-toolbar {
+  position: fixed;
+  bottom: 0;
+  left: 0; /* Ensure same distance from the left border */
+  display: flex;
+  flex-direction: column;
+  z-index: 1500;
+  width: 50px; /* Ensure same width */
+  height: auto; /* Adjust height as needed */
+  margin-left: 10px; /* Distance from left border */
+}
+
+.custom-draw-button {
+  background: whitesmoke;
+  border: 1px solid black;
+  padding: 8px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  transition: transform 0.2s;
+  width: 100%; /* Ensure it fills the width of the toolbar */
+}
+
+.custom-draw-button img {
+  width: 24px;
+  height: 24px;
+}
+
+.custom-draw-button:hover img {
+  filter: brightness(1.2);
+}
+
+.custom-draw-toolbar button:active {
+  background-color: #e0e0e0;
+}
+
+.leaflet-control-zoom {
+  display: none !important;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  z-index: 1001;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 8px;
+  z-index: 1001;
+}
+
+.user-name {
+  font-size: 16px;
+  color:black;
+  font-weight: bold;
+  
+}
+/* Mobile-Only Styles */
+@media (max-width: 768px) {
+  .incident-modal {
+    padding: 5px;
+    margin: 0.8rem;
+  }
+
+  .incident-modal-header {
+    font-size: clamp(1rem,4vw,1.2rem);
+    padding: .8rem;
+    white-space: normal;
+    width: 100%;
+    writing-mode: vertical-rl;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .incident-modal-body {
+    display: none; /* Hide the body on mobile devices */
+  }
+  .overlay-top {
+    flex-direction: column; /* Stack items vertically on mobile */
+    align-items: flex-start; /* Align items to the start of the column */
+  }
+
+  .vehicle-search-container {
+    order: 1; /* Place the vehicle search at the top */
+    align-self: flex-start; /* Align to the top of the container */
+    width: 100%; /* Full width on mobile */
+    margin-bottom: 10px; /* Add space between search and user info */
+  }
+
+  .user-info {
+    order: 2; /* Place user info at the bottom */
+    align-self: flex-end; /* Align to the bottom of the container */
+    width: 100%; /* Full width on mobile */
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto; /* Push user info to the bottom */
+    margin-right:30px;
+  }
+
+  .user-avatar {
+    width: 30px; /* Smaller avatar on mobile */
+    height: 30px;
+    margin-right: 20px;
+  }
+
+  .user-name {
+    font-size: 14px; /* Smaller font size on mobile */
+  }
+  .logo {
+    width: 50px;
+    height: 50px;
+  }
+  .modal-content {
+    transform: scale(0.6);
+    z-index: 1500;
+    max-height: 100%;
+  }
+  .modal-footer .btn {
+    cursor: pointer;
+    display: block;
+    width: 75%; /* Adjust width to fit within the modal */
+    margin: 0 auto; /* Center the button horizontally */
+    padding: 10px; /* Adjust padding to fit within the modal */
+    font-size: 1rem; /* Ensure the font size is appropriate */
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative; /* Ensure the button is positioned within the footer */
+  }
+    .modal-footer .btn:hover {
+      background-color: #0056b3;
+  }  
+    .modal-footer .btn:hover {
+      background-color: #0056b3;
+  }
+}  
+.rotatable-icon {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  background: none !important;
+}
+
+.rotatable-icon img {
+  width: 38px !important;
+  height: 38px !important;
+  transition: transform 0.3s ease-in-out;
+  transform-origin: center center;
+}
+
+.vehicle-icon.fire-engine,
+.vehicle-icon.fire-truck,
+.vehicle-icon.fire-chief,
+.vehicle-icon.fire-vehicle {
+    color: #ff0000;
+}
+
+.custom-tooltip.fire {
+    background-color: rgba(255, 0, 0, 0.8);
+    color: white;
+}
+
+.vehicle-icon {
+    z-index: 1000 !important;
+}
+
+.icon-wrapper {
+    cursor: pointer;
+    pointer-events: auto !important;
+}
+
+/* Make sure tooltips don't interfere with clicks */
+.custom-tooltip {
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* Style for followed vehicle */
+.vehicle-icon.followed {
+    z-index: 1001 !important;  /* Keep followed vehicle on top */
+}
+
+.police-tooltip {
+    /* Keep your existing tooltip styling */
+}
+
+.fire-tooltip {
+    background-color: rgba(255, 0, 0, 0.8) !important;
+    border: 1px solid #ff0000 !important;
+    color: white !important;
+}
+
+.ems-tooltip {
+    background-color: rgba(0, 128, 0, 0.8) !important;
+    border: 1px solid #006400 !important;
+    color: white !important;
+}
+
+/* Make selectors more specific to override Leaflet defaults */
+.leaflet-tooltip.custom-tooltip.police-tooltip {
+    /* Keep your existing tooltip styling */
+}
+
+.leaflet-tooltip.custom-tooltip.fire-tooltip {
+    background-color: rgba(255, 0, 0, 0.8) !important;
+    border: 1px solid #ff0000 !important;
+    color: white !important;
+}
+
+.leaflet-tooltip.custom-tooltip.ems-tooltip {
+    background-color: rgba(0, 128, 0, 0.8) !important;
+    border: 1px solid #006400 !important;
+    color: white !important;
+    /* Override any Leaflet default tooltip styles */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+}
+
+.tooltip-small {
+    transform: scale(0.5) !important;
+    transform-origin: top center !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 2px solid red !important; /* Temporary to make it obvious */
+}
+
+.scaled-tooltip {
+  transform: scale(0.3) !important;
+  transform-origin: top center !important;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.search-result-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.result-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.result-details {
+  flex: 1;
+}
+
+.result-name {
+  font-weight: 500;
+}
+
+.result-type {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Search Container */
+.search-container {
+    position: absolute;
+    left: 100px;
+    top: 10px;
+    width: 250px;  /* Reduced from 300px */
+    z-index: 1000;
+}
+
+/* Search Input */
+.search-input {
+    width: 100%;
+    padding: 8px 12px;  /* Reduced padding */
+    border: none;
+    border-radius: 20px;  /* More rounded corners */
+    font-size: 13px;     /* Slightly smaller font */
+    background-color: rgba(255, 255, 255, 0.95);  /* Slightly transparent */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);    /* Softer shadow */
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-size: 12px;
+}
+
+/* Search Results Dropdown */
+.search-results {
+    position: absolute;
+    top: calc(100% + 5px);  /* Reduced gap */
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.98);
+    border-radius: 8px;
+    margin-top: 2px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    max-height: 250px;  /* Slightly smaller dropdown */
+    overflow-y: auto;
+}
+
+/* Search Result Items */
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;  /* Reduced padding */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 13px;    /* Smaller font */
+}
+
+.result-icon {
+    margin-right: 8px;  /* Reduced margin */
+    font-size: 16px;    /* Smaller icons */
+}
+
+.result-name {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 1px;  /* Reduced margin */
+}
+
+.result-type {
+    font-size: 11px;    /* Smaller font for type */
+    color: #666;
+}
+
+/* Address Prompt Styling */
+.search-result-item.address-prompt {
+    background-color: #f8f9fa;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.search-result-item.address-prompt:hover {
+    background-color: #e9ecef;
+}
+
+.search-result-item.address-prompt .result-name {
+    color: #007bff;
+}
+
+.search-result-item.address-prompt .result-type {
+    color: #6c757d;
+}
+
+/* Scrollbar Styling */
+.search-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.search-results::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+    background: #666;
+}
+
+/* Override Toastify styles */
+.Toastify__toast-container {
+    width: auto !important;
+    max-width: 500px !important;
+}
+
+.Toastify__toast {
+    border-radius: 4px;
+    padding: 0;
+}
+
+.Toastify__toast-body {
+    padding: 0;
+    margin: 0;
+}
+
+.Toastify__toast-container--top-center {
+    top: 1em;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.Toastify__toast {
+    margin: 0 auto;
+    animation: toast-drop-down 0.5s ease-out;
+}
+
+@keyframes toast-drop-down {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.search-result-item.no-results {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    cursor: default;
+}
+
+.search-result-item.error {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    cursor: default;
+}
+
+/* Add these styles to your CSS file */
+.modal-dialog {
+  margin: 1.75rem auto;
+}
+
+.modal-content {
+  border-radius: 0.5rem;
+}
+
+@media (max-width: 576px) {
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+  
+  .modal-footer {
+    padding: 0.5rem;
+  }
+  
+  .modal-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .modal-body {
+    padding: 1rem;
+  }
+}
+
+/* Add these styles to your CSS file */
+.leaflet-control-attribution {
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.7) !important;
+  margin-bottom: 50px !important; /* Push attribution up */
+  max-width: 70%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 10px !important;
+}
+
+/* Make sure the location name doesn't overlap with our status bar */
+.leaflet-bottom {
+  z-index: 900 !important; /* Lower than our status bar */
+}
+
+.leaflet-control {
+  margin-bottom: 55px !important; /* Push controls up */
+}
+
+.slack-notification-toast {
+  background-color: rgba(27, 27, 27, 0.9) !important; /* Dark background matching modal */
+  color: white !important;
+  font-size: 16px !important; /* Reduced from 18px */
+  padding: 12px !important; /* Reduced from 15px */
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  max-width: 400px !important; /* Fixed width instead of percentage */
+  width: auto !important; /* Auto width instead of percentage */
+  min-width: 250px !important;
+  border: 1px solid #444 !important; /* Slightly lighter border for definition */
+}
+
+/* Make sure the container matches the toast width */
+.Toastify__toast-container--top-right {
+  max-width: 400px !important;
+  width: auto !important;
+}
+
+.Toastify__toast-container--top-right .slack-notification-toast {
+  max-width: 400px !important;
+  width: auto !important;
+}
+
+.slack-notification-toast .Toastify__toast-body {
+  color: #FFFFFF !important;
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+}
+
+.Toastify__toast-container {
+  max-width: 400px !important;
+}
+
+/* Add these styles to App.css */
+.notification-toast-container {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.notification-toast-body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+}
+
+/* This ensures the toast content has the right background */
+.Toastify__toast-body > div:last-child > div {
+    background-color: rgba(27, 27, 27, 0.9) !important;
+    color: #FFFFFF !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid #444 !important;
+    width: 100% !important;
+}
+
+/* Enhanced Toast Notification Styles */
+.Toastify__toast {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.Toastify__toast-body {
+  padding: 0 !important;
+  margin: 0 !important;
+  background-color: transparent !important;
+}
+
+.notification-toast-container {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.notification-toast-body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: transparent !important;
+}
+
+/* Direct styling for the notification content */
+.notification-content {
+  background-color: rgba(27, 27, 27, 0.9) !important;
+  color: #FFFFFF !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid #444 !important;
+}
+
+/* Notification image styles */
+.notification-content img {
+  display: block;
+  max-width: 100%;
+  max-height: 180px; /* Reduced from 200px */
+  margin: 8px auto;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.notification-image-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.notification-image-button {
+  background-color: #2c2c2c; /* Match modal tab active color */
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.notification-image-button:hover {
+  background-color: #333;
+}
+
+.notification-image-counter {
+  font-size: 14px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .notification-toast-mobile {
+    width: 80% !important; /* Increased from 50% to give more room */
+    max-width: 300px !important;
+  }
+  
+  .notification-toast-mobile .Toastify__toast {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+  
+  .notification-toast-mobile .notification-content {
+    font-size: 14px !important;
+    padding: 8px !important;
+  }
+  
+  .notification-toast-mobile img {
+    max-height: 120px !important;
+  }
+  
+  .notification-toast-mobile .notification-image-button {
+    font-size: 12px !important;
+    padding: 3px 6px !important;
+  }
+}
+
+/* Override the progress bar color */
+.Toastify__progress-bar {
+  background: #3498db !important; /* Changed to a nice blue color */
+  height: 3px !important; /* Slightly thinner progress bar */
+}
+
+/* More specific selector to override any other styles */
+.Toastify__toast-container .Toastify__toast .Toastify__toast-body > div {
+  background-color: rgba(27, 27, 27, 0.9) !important;
+  color: #FFFFFF !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid #444 !important;
+}
+
+/* Driving mode styles */
+.mobile-button.active {
+  background-color: rgba(52, 152, 219, 0.9) !important;
+  color: white !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+.driving-tooltip {
+  background-color: #3498db !important;
+  color: white !important;
+  font-weight: bold !important;
+  border: 2px solid white !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4) !important;
+  z-index: 1001 !important;
+  padding: 4px 8px !important;
+}
+
+@media (max-width: 576px) {
+  .mobile-button {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
+  
+  .mobile-button span {
+    font-size: 12px !important;
+  }
+  
+  /* Hide text on very small screens, show only icon */
+  @media (max-width: 320px) {
+    .mobile-button span + span {
+      display: none;
+    }
+  }
+}
+
+/* Zoom button styles */
+.mobile-button.zoom-button {
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 20px !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.mobile-button.zoom-button:active {
+  transform: scale(0.95);
+  background-color: rgba(52, 152, 219, 0.8) !important;
+}
+
+/* Exit Driving button */
+.mobile-button.exit-driving {
+  background-color: #3498db !important;
+  color: white !important;
+}
+
+.Toastify__toast-container {
+  max-width: 33% !important; /* Match the max-width of the toast */
+  width: 33% !important; /* Set width to 33% of screen */
+  min-width: 250px !important; /* Minimum width for smaller screens */
+}
+
+/* Regular toast notifications (non-Slack) should auto-close quickly */
+.Toastify__toast:not(.slack-notification-toast) {
+  animation-duration: 500ms !important;
+  transition: all 0.5s ease !important;
+}
+
+/* Override for specific toast types */
+.Toastify__toast--success, 
+.Toastify__toast--error,
+.Toastify__toast--warning,
+.Toastify__toast--info {
+  --toastify-duration: 2000ms !important;
+}
+
+/* Following indicator styling */
+.vehicle-following-indicator {
+  background-color: rgba(27, 27, 27, 0.85) !important;
+  color: white !important;
+  border-radius: 4px !important;
+  padding: 4px 8px !important;
+  font-size: 14px !important;
+  border: 1px solid #444 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,56 @@
+point,name,latitude,longitude,color
+point,0--New York City Line - Major Deegan Expressway (I-87),40.90564,-73.87817,blue
+point,0.48-1-Hall Place - McLean Avenue,40.9121,-73.87535,blue
+point,0.92-2-Yonkers Avenue - Raceway (No Southbound Exit),40.92149,-73.86309,blue
+point,1.77-3-Mile Square Road (No Southbound Exit),40.9251,-73.8585,blue
+point,2.18-4-Cross County Parkway - Mile Square Road,40.93086,-73.85683,blue
+point,2.7-5-White Plains - Central Park Avenue (NY Route 100)(No Southbound Exit),40.93833,-73.85564,blue
+point,4-6-(6 Northbound; 6E & 6W Southbound) Yonkers - Bronxville - Tuckahoe Road,40.95496,-73.86093,blue
+point,5.14-6A-Stew Leonard Drive,40.9667,-73.8608,blue
+point,7.58-7-Ardsley - NY Route 9A (No Southbound Exit),41.00872,-73.85099,blue
+point,10.33-7A-Saw Mill River Parkway - Taconic State Parkway,41.04259,-73.83608,blue
+point,11.31-8-White Plains - Rye - Cross Westchester Expressway (I-287),41.05656,-73.83533,blue
+point,11.8-8A-Elmsford - NY Route 119 - Saw Mill River Parkway North (No Northbound Exit),41.05769,-73.83732,blue
+point,12.65-9-Tarrytown - Sleepy Hollow - US Route 9,41.06267,-73.86195,blue
+point,16.75-10-Nyack - South Nyack - US Route 9W (No Southbound Exit),41.08199,-73.92317,blue
+point,17.63-11-Nyack - South Nyack - US Route 9W,41.09071,-73.92879,blue
+point,18.76-12-West Nyack - NY Route 303 - Palisades Center Drive,41.09957,-73.95094,blue
+point,20.94-13-(13N & 13S in Both Directions) New Jersey - Palisades Interstate Parkway - Bear Mountain State Park,41.10179,-73.99245,blue
+point,22.8-14-Spring Valley - Nanuet - NY Route 59,41.10272,-74.02769,blue
+point,23.53-14A-New Jersey – Garden State Parkway,41.09768,-74.03997,blue
+point,1.48-GSP-Schoolhouse Road - Chestnut Ridge (No Northbound Exit),41.07341,-74.05202,blue
+point,27.62-14B-Airmont - Montebello - Airmont Road,41.11629,-74.11232,blue
+point,30.17-15-New Jersey - I-287 - NJ Route 17 South,41.12133,-74.16283,blue
+point,31.35-15A-Sloatsburg - Suffern - NY Routes 17 North & 59,41.13408,-74.16819,blue
+point,45.2-16-Harriman - US Route 6 - NY Route 17,41.31065,-74.12265,blue
+point,0--Bruckner Expressway (I-95),40.85328,-73.82634,blue
+point,0.23-8-(8B Northbound; 8B & 8C Southbound) City Island - Pelham Parkway - Orchard Beach,40.8582,-73.8267,blue
+point,0.5-9-Hutchinson River Parkway North,40.86045,-73.82773,blue
+point,0.55-10-Gun Hill Road (No Southbound Exit),40.86229,-73.82929,blue
+point,1.11-11-Bartow Avenue - Co-op City Boulevard,40.86851,-73.83266,blue
+point,1.61-12-Baychester Avenue (No Southbound Exit),40.87562,-73.83453,blue
+point,2.37-13-Conner Street - Baychester Avenue,40.88389,-73.8258,blue
+point,2.96-14-Hutchinson River Parkway South - Whitestone Bridge (No Northbound Exit),40.8867,-73.81524,blue
+point,4.63-15-New Rochelle - The Pelhams – US Route 1,40.90039,-73.79564,blue
+point,6.04-16-New Rochelle - North Avenue - Cedar Street,40.91707,-73.7812,blue
+point,7.01-17-Larchmont - Chatsworth Avenue (No Southbound Exit),40.92955,-73.7655,blue
+point,9.14-18A-Mamaroneck - Fenimore Road (No Southbound Exit) - Mamaroneck - Mamaroneck Avenue East (No Northbound Exit),40.95185,-73.74556,blue
+point,10.04-18B-White Plains - Mamaroneck Avenue,40.96228,-73.73532,blue
+point,12.48-19-Rye - Harrison - Playland Parkway,40.97686,-73.69899,blue
+point,13.39-20-Rye - US Route 1 South (No Southbound Exit),40.9874,-73.68029,blue
+point,13.91-21-White Plains - Port Chester - Cross Westchester Expressway (I-287) - US Route 1 North - Governor Mario M. Cuomo Bridge,40.98778,-73.67749,blue
+point,14.03-22-Port Chester - Rye - Midland Avenue (No Southbound Exit),40.9875,-73.67277,blue
+point,15.01--Connecticut State Line - Connecticut Turnpike (I-95),40.99548,-73.65838,blue
+point,0.17-1-Tarrytown - Saw Mill River Parkway - NY Route 119 (No Eastbound Exit),41.05902,-73.82964,blue
+point,0.8-2-Elmsford - Saw Mill River Road (NY Route 9A) (No Eastbound Exit),41.05815,-73.81714,blue
+point,1.22-3-New York City - Taconic State Parkway - Sprain Brook Parkway,41.055,-73.81026,blue
+point,1.87-4-Hartsdale - Knollwood Road (NY Route 100A),41.0472,-73.80384,blue
+point,2.6-5-White Plains - Hillside Avenue (NY Route 100) -  Tarrytown-White Plains Road (NY Route 119),41.04468,-73.79043,blue
+point,3.78-6-White Plains - North White Plains - Broadway (NY Route 22),41.04579,-73.7695,blue
+point,4.06-7-North White Plains - Central Westchester Parkway North - Taconic State Parkway (No Eastbound Exit),41.04456,-73.76461,blue
+point,5.09-8-(8 Westbound; 8E & 8W Eastbound) White Plains - NY Route 127 – Westchester Avenue (NY Route 119) - Westchester Mall Place - Bloomingdale Road,41.03383,-73.75378,blue
+point,6.45-9A-Brewster - I-684 - Westchester Avenue,41.02472,-73.73036,blue
+point,7.55-9-Hutchinson River Parkway - Merritt Parkway - Whitestone Bridge,41.0141,-73.717,blue
+point,8.7-10-Purchase - Port Chester - NY Routes 120 & 120A - Bowman Avenue - Webb Avenue,41.00841,-73.69776,blue
+point,10.27-11-Port Chester - Rye - US Route 1 (No Westbound Exit),40.99357,-73.67815,blue
+point,10.39-12-New York - I-95 South,40.99193,-73.67729,blue

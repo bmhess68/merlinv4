@@ -1,0 +1,19 @@
+.weather-alert-extreme {
+    background-color: #ff4444 !important;
+    color: white;
+}
+
+.weather-alert-severe {
+    background-color: #ff8800 !important;
+    color: white;
+}
+
+.weather-alert-moderate {
+    background-color: #ffbb33 !important;
+    color: black;
+}
+
+.weather-alert-normal {
+    background-color: #00C851 !important;
+    color: white;
+}

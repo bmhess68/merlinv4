@@ -1,0 +1,197 @@
+# Project Structure
+src/
+├── config/
+│   ├── database.js    # Database configuration
+│   ├── redis.js       # Redis configuration
+│   └── cors.js        # CORS settings
+├── middleware/
+│   ├── auth.js        # Authentication middleware
+│   ├── security.js    # Security middleware
+│   └── logging.js     # Logging middleware
+├── routes/
+│   ├── admin.js       # Admin routes
+│   ├── incidents.js   # Incident management
+│   ├── markers.js     # Map markers
+│   ├── roster.js      # Vehicle roster
+│   ├── weather.js     # Weather data
+│   ├── csv.js         # CSV file handling
+│   ├── drawnItems.js  # Map drawings
+│   └── addressSearch.js # Address lookup
+├── services/
+│   ├── auditService.js    # Audit logging
+│   ├── cadService.js      # CAD integration
+│   ├── cadAlertService.js # CAD alerts
+│   ├── locationService.js # Location tracking
+│   └── weatherService.js  # Weather data
+└── server.js         # Main application entry
+
+# Database Schema
+Tables:
+  incidents:
+    - incident_id (INT, PK)
+    - name (VARCHAR)
+    - type_incident (VARCHAR)
+    - location_lat (FLOAT)
+    - location_long (FLOAT)
+    - radius (FLOAT)
+    - notes (TEXT)
+    - incident_commander (VARCHAR)
+    - staging_manager (VARCHAR)
+    - communications (VARCHAR)
+    - created_by_name (VARCHAR)
+    - created_by_userid (VARCHAR)
+    - active (BOOLEAN)
+    - date (DATE)
+    - time (TIME)
+    - startuser (VARCHAR)
+    - inc_close_datetime (TIMESTAMP)
+    - disposition (VARCHAR)
+    - email (VARCHAR)
+    - location (GEOGRAPHY(POINT))
+
+  incident_vehicles:
+    - id (SERIAL, PK)
+    - incident_id (UUID, FK)
+    - vehicle_id (VARCHAR)
+    - officer_name (VARCHAR)
+    - assignment (VARCHAR)
+    - action (VARCHAR)
+    - timestamp (TIMESTAMP)
+    - notes (TEXT)
+    - location (GEOGRAPHY(POINT))
+    - vehicle_type (VARCHAR)
+
+  markers:
+    - id (SERIAL, PK)
+    - type (VARCHAR)
+    - latitude (FLOAT)
+    - longitude (FLOAT)
+    - properties (JSONB)
+    - created_by (VARCHAR)
+    - incident_id (UUID, FK)
+    - active (BOOLEAN)
+    - created_at (TIMESTAMP)
+
+  drawn_items:
+    - id (SERIAL, PK)
+    - type (VARCHAR)
+    - coordinates (JSONB)
+    - properties (JSONB)
+    - created_by (VARCHAR)
+    - incident_id (UUID, FK)
+    - active (BOOLEAN)
+    - created_at (TIMESTAMP)
+
+  users:
+    - id (SERIAL, PK)
+    - email (VARCHAR, UNIQUE)
+    - name (VARCHAR)
+    - permissions (JSONB)
+    - last_login (TIMESTAMP)
+
+  closeinc:
+    - id (SERIAL, PK)
+    - incident_id (INTEGER, FK -> incidents.incident_id)
+    - disposition (VARCHAR(255))
+    - notes (TEXT)
+    - email_requested (BOOLEAN)
+    - email_address (VARCHAR(255))
+    - created_by_name (VARCHAR(255))
+    - created_by_userid (VARCHAR(50))
+
+  audit_log:
+    - id (SERIAL, PK)
+    - timestamp (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+    - action (VARCHAR(255), NOT NULL)
+    - performed_by (VARCHAR(255), NOT NULL)
+    - target_user (VARCHAR(255))
+    - permission_changed (VARCHAR(255))
+    - old_value (BOOLEAN)
+    - new_value (BOOLEAN)
+    - details (TEXT)
+
+  login:
+    - login_id (SERIAL, PK)
+    - username (VARCHAR(255))
+    - user_email (VARCHAR(255))
+    - notes (TEXT)
+    - datetime (TIMESTAMP)
+
+  poi:
+    - poi_id (SERIAL, PK)
+    - type (VARCHAR(255))
+    - location_lat (DOUBLE PRECISION)
+    - location_long (DOUBLE PRECISION)
+    - notes (TEXT)
+    - adduser (VARCHAR(255))
+    - datetime (TIMESTAMP)
+    - filesadded (VARCHAR(255))
+
+  assignments:
+    - id (SERIAL, PK)
+    - name (VARCHAR)
+    - active (BOOLEAN)
+
+    -- drawn_items table schema
+CREATE TABLE drawn_items (
+    id SERIAL PRIMARY KEY,
+    incident_id INTEGER NOT NULL,
+    geojson JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    datetime_added TIMESTAMP DEFAULT NOW(),
+    name VARCHAR(255),
+    color VARCHAR(50),
+    active BOOLEAN DEFAULT true,
+    created_by_name VARCHAR(255),
+    created_by_userid VARCHAR(50)
+);
+
+  cad_alerts:
+    - id (SERIAL, PK)
+    - event_number (VARCHAR)
+    - address (VARCHAR)
+    - cross_street (VARCHAR)
+    - call_type (VARCHAR)
+    - time_out (TIMESTAMP)
+    - area (VARCHAR)
+    - alarm_level (VARCHAR)
+    - comments (TEXT)
+    - latitude (FLOAT)
+    - longitude (FLOAT)
+    - expires_at (TIMESTAMP)
+    - is_active (BOOLEAN)
+    - processed (BOOLEAN)
+
+  inctype:
+    - type_id (SERIAL, PK)
+    - type_name (VARCHAR)
+
+  disposition:
+    - id (SERIAL, PK)
+    - disposition_text (VARCHAR)
+
+# Important Indexes
+- audit_log_timestamp_idx on audit_log(timestamp)
+- closeinc_pkey on closeinc(id)
+- poi_pkey on poi(poi_id)
+- login_pkey on login(login_id)
+
+# Foreign Key Relationships
+- closeinc.incident_id -> incidents.incident_id
+- incident_vehicles.incident_id -> incidents.incident_id
+- markers.incident_id -> incidents.incident_id
+- drawn_items.incident_id -> incidents.incident_id
+
+# Environment Variables
+Required ENV:
+  - DB_USER
+  - DB_HOST
+  - DB_DATABASE
+  - DB_PASSWORD
+  - DB_PORT
+  - REDIS_URL
+  - SESSION_SECRET
+  - GOOGLE_MAPS_API_KEY
+  - WEATHER_API_KEY
+
+

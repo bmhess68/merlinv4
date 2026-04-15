@@ -1,0 +1,102 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: #ffffff; /* Ensure text is visible */
+}
+
+.admin-page-container {
+    height: 100vh;
+    background-image: 'url(/images/background.jpg)'; /* Use the same background as the login page */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+}
+
+.admin-content {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    max-width: 1200px;
+    width: 90%;
+    z-index: 2; /* Ensure content is above the background */
+}
+
+.admin-section {
+    margin-bottom: 20px;
+}
+
+.input-field, .input-file {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #333;
+    color: #fff;
+}
+
+.admin-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-button:hover {
+    background-color: #0056b3;
+}
+
+.scroll-box {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: scroll;
+    border: 1px solid #444;
+    color: #fff; /* Ensure text color is visible */
+}
+
+.status-lights {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.admin-section table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.admin-section table th,
+.admin-section table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.admin-section table th:nth-child(1),
+.admin-section table td:nth-child(1) {
+    width: 25%;
+}
+
+.admin-section table th:nth-child(2),
+.admin-section table td:nth-child(2) {
+    width: 20%;
+}
+
+.admin-section table th:nth-child(n+3):nth-child(-n+7),
+.admin-section table td:nth-child(n+3):nth-child(-n+7) {
+    width: 8%;
+    text-align: center;
+}
+
+.admin-section table th:last-child,
+.admin-section table td:last-child {
+    width: 15%;
+}

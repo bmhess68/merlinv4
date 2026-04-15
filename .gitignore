@@ -1,0 +1,36 @@
+node_modules/
+
+# Secrets and environment
+.env
+.env.development
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+
+# Logs and runtime data
+src/logs/
+logs/
+*.log
+tmp/
+
+# Build artifacts (can be rebuilt)
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+myenv/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Backup files
+backup/
+
+# Misc
+ud\033O
+*.bak
